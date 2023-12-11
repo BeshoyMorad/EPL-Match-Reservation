@@ -7,10 +7,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
+  firstName String
+  lastName  String
+  birthDate DateTime
+  gender    String
+  city      String
+  address   String?
+  emial     String
+  role      String // Admin, Manager, Fan
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deleted   Boolean
+
+  // Define the relationships
+  matches     Match[]       @relation("UserMatches")
+  Reservation Reservation[]
+}
+
+model Match {
+  id          Int      @id @default(autoincrement())
+  homeTeamId  Int
+  awayTeamId  Int
+  venueId     Int
+  dateAndTime DateTime
+  mainReferee String
+  linesman1   String
+  linesman2   String
+
+  // Define the relationships
+  homeTeam    Team          @relation(name: "HomeTeamRelation", fields: [homeTeamId], references: [id])
+  awayTeam    Team          @relation(name: "AwayTeamRelation", fields: [awayTeamId], references: [id])
+  venue       Stadium       @relation(fields: [venueId], references: [id])
+  spectators  User[]        @relation("UserMatches")
+  Reservation Reservation[]
+}
+
+model Team {
+  id         Int     @id @default(autoincrement())
+  name       String
+  homeMatchs Match[] @relation("HomeTeamRelation")
+  awayMatchs Match[] @relation("AwayTeamRelation")
+}
+
+model Stadium {
+  id    Int    @id @default(autoincrement())
+  name  String
+  rows  Int
+  seats Int
+
+  Matchs Match[]
+}
+
+model Seat {
+  id           Int           @id @default(autoincrement())
+  number       String
+  // Add other relevant fields for seats
+  reservations Reservation[]
+}
+
+model Reservation {
+  id              Int      @id @default(autoincrement())
+  ticketNumber    String   @unique
+  reservationDate DateTime @default(now())
+  customerId      Int
+  matchId         Int
+
+  // Define the relationships
+  customer User   @relation(fields: [customerId], references: [id])
+  match    Match  @relation(fields: [matchId], references: [id])
+  seats    Seat[]
 }
