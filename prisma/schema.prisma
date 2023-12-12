@@ -19,6 +19,7 @@ model User {
   address   String?
   emial     String
   role      String // Admin, Manager, Fan
+  verified  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean
