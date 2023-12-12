@@ -50,10 +50,12 @@ export default function AdminPanel() {
           <Paper elevation={4} sx={{ borderRadius: "1rem" }}>
             <div className="p-4">
               <h6 className="text-gray-500">username</h6>
-              <h5 className="font-semibold text-xl">FirstName + LastName</h5>
-              <h6 className="text-gray-500 py-2">email</h6>
+              <h5 className="font-semibold text-xl text-[var(--main-color)]">
+                FirstName + LastName
+              </h5>
+              <h6 className="text-gray-500 mb-2">email</h6>
 
-              <div className=" bg-blue-500 w-fit p-1 rounded-lg text-white">
+              <div className=" bg-blue-500 w-fit px-2 py-1 rounded-lg text-white">
                 <MaleIcon /> Male
               </div>
 
@@ -84,7 +86,7 @@ export default function AdminPanel() {
       {/* TOP_USERS */}
       <TableContainer component={Paper} sx={{ mt: "1.2rem" }}>
         <Table>
-          <TableHead sx={{ bgcolor: "#d5e7ff" }}>
+          <TableHead sx={{ bgcolor: "#8ace9d" }}>
             <TableRow sx={{ fontWeight: "bold" }}>
               <TableCell className="text-lg">User</TableCell>
               <TableCell className="text-lg">Gender</TableCell>

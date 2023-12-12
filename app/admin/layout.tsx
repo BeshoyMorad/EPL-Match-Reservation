@@ -23,7 +23,7 @@ export default function AdminPanelLayout({
         component="nav"
         position="static"
         sx={{
-          bgcolor: "var(--admin-background-color)",
+          bgcolor: "var(--main-color)",
           borderRadius: "1rem",
           width: "97%",
           margin: "3px auto",
