@@ -15,11 +15,11 @@ import LockIcon from "@mui/icons-material/Lock";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const pages = [
-  { name: "Matches", icon: <SportsSoccerIcon /> },
-  { name: "Profile", icon: <PersonIcon /> },
-  // { name: "Register", icon: <PersonAddIcon /> },
-  // { name: "Sign in", icon: <LockIcon /> },
-  { name: "Sign out", icon: <ExitToAppIcon /> },
+  { name: "Matches", link: "/", icon: <SportsSoccerIcon /> },
+  { name: "Profile", link: "/profile", icon: <PersonIcon /> },
+  // { name: "Register", link: "/signup", icon: <PersonAddIcon /> },
+  // { name: "Sign in", link: "/signin", icon: <LockIcon /> },
+  { name: "Sign out", link: "/signout", icon: <ExitToAppIcon /> },
 ];
 
 export default function Navbar() {
@@ -47,6 +47,7 @@ export default function Navbar() {
           <Button
             key={page.name}
             sx={{ my: 1, color: "white", display: "block" }}
+            href={page.link}
           >
             <Box display={{ xs: "none", sm: "block" }}>
               <div className="flex items-center gap-1">

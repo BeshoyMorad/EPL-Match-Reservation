@@ -1,4 +1,4 @@
-import { Button, Grid, Paper } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import moment from "moment";
@@ -19,66 +19,54 @@ interface IMatch {
 
 export default function Match({ match }: { match: IMatch }) {
   return (
-    <Paper elevation={3} className="p-4">
+    <Paper elevation={3} className="p-4 max-w-3xl m-auto rounded-xl">
       <Link href={`/match/${match.id}`}>
-        <div className="flex flex-col gap-4">
-          <Grid container gap={2} justifyContent={"space-between"}>
-            <Grid item xs={9} md={4} className="m-auto">
-              <div className="teams flex gap-2 items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="text-xl font-semibold">{match.homeTeam}</div>
-                  <Image
-                    src="/images/Al Ittihad Alexandria Club.png"
-                    width={38}
-                    height={38}
-                    alt="team"
-                  />
-                </div>
+        <div className="teams flex gap-5 items-center justify-center py-3">
+          <div className="flex items-center gap-2">
+            <div className="text-xl font-semibold">{match.homeTeam}</div>
+            <Image
+              src="/images/Al Ittihad Alexandria Club.png"
+              width={38}
+              height={38}
+              alt="team"
+            />
+          </div>
 
-                <span className="font-medium">VS</span>
+          <span className="font-medium">
+            {moment(match.dateAndTime).format("h:mm A")}
+          </span>
 
-                <div className="flex items-center gap-2">
-                  <Image
-                    src="/images/Al Ahly SC.png"
-                    width={38}
-                    height={38}
-                    alt="team"
-                  />
-                  <div className="text-xl font-semibold">{match.awayTeam}</div>
-                </div>
-              </div>
-            </Grid>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/images/Al Ahly SC.png"
+              width={38}
+              height={38}
+              alt="team"
+            />
+            <div className="text-xl font-semibold">{match.awayTeam}</div>
+          </div>
+        </div>
 
-            <Grid item xs={9} md={6} className="m-auto">
-              <div className="flex gap-3 justify-between">
-                <div className="stadium flex items-center gap-2">
-                  <StadiumOutlinedIcon sx={{ fontSize: "3rem" }} />
+        <div className="flex gap-5 justify-center border-t-2 border-t-slate-200 py-3">
+          <div className="stadium flex items-center gap-2">
+            <StadiumOutlinedIcon sx={{ fontSize: "3rem" }} />
 
-                  <h4 className="text-lg">{match.venue}</h4>
-                </div>
-                <div className="date flex items-center">
-                  <CalendarMonthOutlinedIcon sx={{ fontSize: "3rem" }} />
-                  <div className="flex flex-col">
-                    <span>
-                      {moment(match.dateAndTime).format("ddd DD MMM YYYY")}
-                    </span>
-                    <span>
-                      Time: {moment(match.dateAndTime).format("h:mm A")}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Grid>
-          </Grid>
+            <h4 className="text-lg">{match.venue}</h4>
+          </div>
 
-          <div className="book-ticket">
-            <Button className="flex items-center gap-2 bg-[var(--main-color)] hover:bg-[#32d360] text-white m-auto w-60">
-              <ConfirmationNumberOutlinedIcon />
-              Book ticket
-            </Button>
+          <div className="date flex items-center">
+            <CalendarMonthOutlinedIcon sx={{ fontSize: "3rem" }} />
+            {moment(match.dateAndTime).format("ddd DD MMM YYYY")}
           </div>
         </div>
       </Link>
+
+      <div className="book-ticket mt-5">
+        <Button className="flex items-center gap-2 bg-[var(--main-color)] hover:bg-[#32d360] text-white m-auto">
+          <ConfirmationNumberOutlinedIcon />
+          Book ticket
+        </Button>
+      </div>
     </Paper>
   );
 }
