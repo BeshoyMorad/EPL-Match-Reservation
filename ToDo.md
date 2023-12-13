@@ -1,18 +1,19 @@
 # Beshoy
 
-- 4 Site Admin page (table of user to approve or cancel)
-- 4 Create and edit a match page
+- Site Admin page (table of user to approve or cancel) [Done]
+- Create and edit a match page [Not yet]
 
 # Eslam and Hamdy
 
-- Hamdy (Models)
-- 8 Home page (Matchs, Teams) and navbar
-- 6 Sign up and login page
+- Hamdy (Models) [Done]
+- Navbar [Done]
+- Home page (Matchs) [Done]
+- Sign up and login page [Not yet]
 
 # Noaman
 
-- 3 Create and edit stadium shape
-- 10 Match + reservation page
+- Create and edit stadium shape
+- Match + reservation page
 
 # Technologies
 
