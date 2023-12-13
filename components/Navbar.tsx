@@ -24,49 +24,42 @@ const pages = [
 
 export default function Navbar() {
   return (
-    <AppBar
-      position="static"
-      className="bg-[var(--main-color)] mt-3 rounded-xl w-[98%] m-auto"
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            sx={{
-              mr: 2,
-              display: "flex",
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-              flexGrow: 1,
-            }}
-          >
-            LOGO
-          </Typography>
+    <nav className="flex items-center px-3 bg-[var(--main-color)] mt-3 rounded-xl w-[98%] m-auto">
+      <Typography
+        variant="h6"
+        noWrap
+        sx={{
+          mr: 2,
+          display: "flex",
+          fontFamily: "monospace",
+          fontWeight: 700,
+          letterSpacing: ".3rem",
+          color: "white",
+          textDecoration: "none",
+          flexGrow: 1,
+        }}
+      >
+        LOGO
+      </Typography>
 
-          <Box sx={{ display: "flex" }}>
-            {pages.map((page) => (
-              <Button
-                key={page.name}
-                sx={{ my: 1, color: "white", display: "block" }}
-              >
-                <Box display={{ xs: "none", sm: "block" }}>
-                  <div className="flex items-center gap-1">
-                    <span>{page.icon}</span>
-                    <span>{page.name}</span>
-                  </div>
-                </Box>
-                <Box display={{ sm: "none" }}>
-                  <span>{page.icon}</span>
-                </Box>
-              </Button>
-            ))}
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+      <Box sx={{ display: "flex" }}>
+        {pages.map((page) => (
+          <Button
+            key={page.name}
+            sx={{ my: 1, color: "white", display: "block" }}
+          >
+            <Box display={{ xs: "none", sm: "block" }}>
+              <div className="flex items-center gap-1">
+                <span>{page.icon}</span>
+                <span>{page.name}</span>
+              </div>
+            </Box>
+            <Box display={{ sm: "none" }}>
+              <span>{page.icon}</span>
+            </Box>
+          </Button>
+        ))}
+      </Box>
+    </nav>
   );
 }
