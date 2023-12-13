@@ -1,8 +1,21 @@
+import Match from "@/components/Match";
+import { Container } from "@mui/material";
+
 export default function Home() {
+  const match = {
+    id: 1,
+    homeTeam: "Team 1",
+    awayTeam: "Team 2",
+    venue: "Venue",
+    dateAndTime: new Date(),
+    mainReferee: "Main Referee",
+    linesman1: "Linesman 1",
+    linesman2: "Linesman 2",
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-6xl font-bold">EPL Match Reservation</h1>
-      <p className="text-2xl">Welcome to EPL Match Reservation</p>
-    </main>
+    <Container className="mt-5">
+      <Match match={match} />
+    </Container>
   );
 }
