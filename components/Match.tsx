@@ -1,10 +1,11 @@
-import { Button, Paper } from "@mui/material";
+import { Button, Paper, IconButton, Icon } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import moment from "moment";
 import StadiumOutlinedIcon from "@mui/icons-material/StadiumOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface IMatch {
   id: Number;
@@ -19,7 +20,13 @@ interface IMatch {
 
 export default function Match({ match }: { match: IMatch }) {
   return (
-    <Paper elevation={3} className="p-4 max-w-3xl m-auto rounded-xl">
+    <Paper elevation={3} className="p-4 max-w-3xl m-auto rounded-xl relative">
+      <IconButton className="text-[var(--main-color)] absolute right-3 top-1">
+        <Link href={`/match/edit/${match.id}`}>
+          <EditIcon />
+        </Link>
+      </IconButton>
+
       <Link href={`/match/${match.id}`}>
         <div className="teams flex gap-5 items-center justify-center py-3">
           <div className="flex items-center gap-2">

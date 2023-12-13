@@ -8,6 +8,17 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs, { Dayjs } from "dayjs";
+
+interface IintialState {
+  homeTeam: Number | string;
+  awayTeam: Number | string;
+  stadium: String | null;
+  date: Date | Dayjs | null;
+  mainReferee: String | null;
+  linesman1: String | null;
+  linesman2: String | null;
+}
 
 export default function MatchForm({ id }: { id: Number | null }) {
   // Fetch teams from the backend
@@ -27,7 +38,7 @@ export default function MatchForm({ id }: { id: Number | null }) {
   ];
   const [waiting, setWaiting] = useState(false);
 
-  const intialState = {
+  let intialState: IintialState = {
     homeTeam: "",
     awayTeam: "",
     stadium: "",
@@ -39,6 +50,15 @@ export default function MatchForm({ id }: { id: Number | null }) {
 
   if (id) {
     // Update => fetch the match and update intialState
+    intialState = {
+      homeTeam: 1,
+      awayTeam: 2,
+      stadium: "Venue",
+      date: dayjs(new Date()),
+      mainReferee: "Main Referee",
+      linesman1: "Linesman 1",
+      linesman2: "Linesman 2",
+    };
   }
 
   const formik = useFormik({
