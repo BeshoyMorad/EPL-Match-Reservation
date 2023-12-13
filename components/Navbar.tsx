@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";

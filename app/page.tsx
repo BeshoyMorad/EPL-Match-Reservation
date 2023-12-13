@@ -1,5 +1,6 @@
 import Match from "@/components/Match";
-import { Container } from "@mui/material";
+import { Button, Container } from "@mui/material";
+import QueueOutlinedIcon from "@mui/icons-material/QueueOutlined";
 
 export default function Home() {
   const match = {
@@ -14,7 +15,25 @@ export default function Home() {
   };
 
   return (
+    // Fetch all matches with date >= today and use SHOW_MATCHES
+
     <Container className="mt-5">
+      <Button
+        sx={{
+          border: "2px solid var(--main-color)",
+          color: "var(--main-color)",
+          display: "block",
+          width: "fit-content",
+          ml: "auto",
+          mb: "1rem",
+        }}
+        href="/match/create"
+      >
+        <QueueOutlinedIcon />
+        <span className="ml-2">Add New Match</span>
+      </Button>
+
+      {/* SHOW_MATCHES */}
       <Match match={match} />
     </Container>
   );
