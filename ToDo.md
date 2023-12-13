@@ -1,7 +1,7 @@
 # Beshoy
 
 - Site Admin page (table of user to approve or cancel) [Done]
-- Create and edit a match page [Not yet]
+- Create and edit a match page [Done]
 
 # Eslam and Hamdy
 
