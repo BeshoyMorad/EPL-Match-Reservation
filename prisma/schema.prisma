@@ -50,6 +50,7 @@ model Match {
 model Team {
   id         Int     @id @default(autoincrement())
   name       String
+  image      String
   homeMatchs Match[] @relation("HomeTeamRelation")
   awayMatchs Match[] @relation("AwayTeamRelation")
 }
