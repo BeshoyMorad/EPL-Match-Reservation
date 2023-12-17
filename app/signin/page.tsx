@@ -2,14 +2,16 @@
 import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import { Container } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
-import React from "react";
+import React, { useState } from "react";
+import { signInSchema } from "@/prisma/schemas/signIn";
+import { useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
+
+interface UserLogin {
+  userName: string;
+  password: string;
+}
 export default function SignIn() {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -20,6 +22,23 @@ export default function SignIn() {
   ) => {
     event.preventDefault();
   };
+  let userLogin: UserLogin = {
+    userName: "",
+    password: "",
+  };
+
+  const [waiting, setWaiting] = useState(false);
+
+  const formik = useFormik({
+    initialValues: userLogin,
+    validationSchema: signInSchema,
+    async onSubmit(values) {
+      setWaiting(true);
+      console.log(values);
+      setWaiting(false);
+    },
+  });
+
   return (
     <Container
       sx={{
@@ -30,9 +49,10 @@ export default function SignIn() {
       }}
       maxWidth="sm"
     >
-      <div
+      <form
         className="bg-white rounded-3xl p-8"
         style={{ boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)" }}
+        onSubmit={formik.handleSubmit}
       >
         <h1 className="text-center text-3xl text-[var(--main-color)] font-bold mt-5">
           Sign In
@@ -43,28 +63,23 @@ export default function SignIn() {
           label="User Name"
           id="userName"
           name="userName"
+          value={formik.values.userName}
+          onChange={formik.handleChange}
+          error={formik.touched.userName && Boolean(formik.errors.userName)}
+          helperText={formik.touched.userName && formik.errors.userName}
         />
-        <FormControl fullWidth sx={{ mt: 1 }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password
-          </InputLabel>
-          <OutlinedInput
-            fullWidth
-            id="outlined-adornment-password"
-            type={showPassword ? "text" : "password"}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                ></IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-          />
-        </FormControl>
+        <TextField
+          className="mt-2"
+          fullWidth
+          id="outlined-adornment-password"
+          type={showPassword ? "text" : "password"}
+          label="Password"
+          name="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
+        />
         <div className="flex gap-2  items-center justify-center py-3">
           <label>Do not have an account?</label>
           <Button
@@ -80,6 +95,7 @@ export default function SignIn() {
         </div>
         <div className="flex gap-2  items-center justify-center py-3">
           <Button
+            type="submit"
             sx={{ backgroundColor: "var(--main-color) !important" }}
             variant="contained"
             color="success"
@@ -87,7 +103,7 @@ export default function SignIn() {
             Sign In
           </Button>
         </div>
-      </div>
+      </form>
     </Container>
   );
 }
