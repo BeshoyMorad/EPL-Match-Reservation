@@ -15,7 +15,6 @@ const userSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
@@ -23,12 +22,11 @@ const userSchema = mongoose.Schema({
   },
   birthDate: {
     type: Date,
-    required: true,
   },
   role: {
     type: String,
     default: "guest",
-    enum: ["guest", "admin", "fan", "manager"],
+    enum: ["fan", "manager"],
     required: true,
   },
   gender: {
@@ -39,7 +37,6 @@ const userSchema = mongoose.Schema({
   },
   city: {
     type: String,
-    required: true,
   },
   address: {
     type: String,
