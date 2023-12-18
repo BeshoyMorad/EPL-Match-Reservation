@@ -1,7 +1,10 @@
 import express from "express";
 import { validateRequestSchema } from "../middlewares/validationResult.js";
 import matchController from "../controllers/matchController.js";
-import { createMatchValidator } from "../validators/matchValidators.js";
+import {
+  createMatchValidator,
+  editMatchValidator,
+} from "../validators/matchValidators.js";
 import { verifyAuthToken } from "../middlewares/authMiddlewares.js";
 import { checkId } from "../middlewares/checkId.js";
 
@@ -19,18 +22,13 @@ matchRouter.put(
   "/match/:id",
   verifyAuthToken,
   checkId,
-  createMatchValidator,
+  editMatchValidator,
   validateRequestSchema,
   matchController.editMatch
 );
 
-matchRouter.get(
-  "/match/:id",
-  verifyAuthToken,
-  checkId,
-  createMatchValidator,
-  validateRequestSchema,
-  matchController.getMatch
-);
+matchRouter.get("/match/:id", checkId, matchController.getMatch);
+
+matchRouter.get("/matches", matchController.getMatches);
 
 export default matchRouter;

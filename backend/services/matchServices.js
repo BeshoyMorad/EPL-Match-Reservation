@@ -18,7 +18,7 @@ export async function checkVenueId(venueId) {
   checkValidId(venueId);
   const venue = await Stadium.findById(venueId);
   if (!venue) {
-    const error = new Error("Invalid Venue Id");
+    const error = new Error("Stadium not found");
     error.statusCode = 400;
     throw error;
   }
@@ -26,7 +26,7 @@ export async function checkVenueId(venueId) {
 }
 
 export function compareTeamIds(homeTeamId, awayTeamId) {
-  if (homeTeamId === awayTeamId) {
+  if (homeTeamId.toString() === awayTeamId.toString()) {
     const error = new Error("Home and Away teams can't be the same");
     error.statusCode = 400;
     throw error;
@@ -46,7 +46,11 @@ export async function validateMatchDetails(homeTeamId, awayTeamId, venueId) {
 }
 
 export async function getMatchById(matchId) {
-  const match = await Match.findById(matchId);
+  checkValidId(matchId);
+  const match = await Match.findById(matchId)
+    .populate("homeTeamId")
+    .populate("awayTeamId")
+    .populate("venueId");
   if (!match) {
     const error = new Error("Match not found");
     error.statusCode = 400;
@@ -60,4 +64,16 @@ export async function updateMatch(match, body) {
     match[key] = body[key];
   }
   await match.save();
+}
+
+export async function retrieveMatches(skip, limit) {
+  if (!skip) skip = 0;
+  if (!limit) limit = 10;
+  const matches = await Match.find()
+    .populate("homeTeamId")
+    .populate("awayTeamId")
+    .populate("venueId")
+    .skip(skip)
+    .limit(limit);
+  return matches;
 }

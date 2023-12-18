@@ -1,6 +1,7 @@
 import {
   addNewMatch,
   getMatchById,
+  retrieveMatches,
   updateMatch,
   validateMatchDetails,
 } from "../services/matchServices.js";
@@ -74,10 +75,25 @@ const getMatch = async (req, res) => {
   }
 };
 
+const getMatches = async (req, res) => {
+  try {
+    const { skip, limit } = req.body;
+    const matches = await retrieveMatches(skip, limit);
+    return res.status(200).json(matches);
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
 const matchController = {
   createMatch,
   editMatch,
   getMatch,
+  getMatches,
 };
 
 export default matchController;

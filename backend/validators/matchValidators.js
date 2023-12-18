@@ -33,7 +33,7 @@ export const createMatchValidator = [
     .withMessage("Linesman name must be in letters only"),
 ];
 
-export const editUserValidator = [
+export const editMatchValidator = [
   body("dateAndTime").optional().isDate().withMessage("Invalid date format"),
   body("mainReferee")
     .optional()
