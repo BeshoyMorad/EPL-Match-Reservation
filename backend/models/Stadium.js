@@ -9,18 +9,10 @@ const stadiumSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  numberOfSeats: {
+  seatsPerRow: {
     type: Number,
     required: true,
   },
-  matches: [
-    {
-      matchId: {
-        type: Schema.Types.ObjectId,
-        ref: "Match",
-      },
-    },
-  ],
 });
 
 const Stadium = mongoose.model("Stadium", stadiumSchema);

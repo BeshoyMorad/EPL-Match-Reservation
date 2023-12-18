@@ -5,14 +5,11 @@ const seatSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  reservations: [
-    {
-      reservationId: {
-        type: Schema.Types.ObjectId,
-        ref: "Reservation",
-      },
-    },
-  ],
+  vacant: {
+    type: Boolean,
+    default: true,
+    required: true,
+  },
 });
 
 const Seat = mongoose.model("Seat", seatSchema);
