@@ -16,5 +16,5 @@ export const signUpSchema = yup.object().shape({
     .string()
     .required("Confirm Password is required")
     .oneOf([yup.ref("password")], "Passwords must match"),
-  Role: yup.string().required("Role is required"),
+  role: yup.string().required("Role is required"),
 });

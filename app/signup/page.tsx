@@ -26,15 +26,15 @@ export default function SignUp() {
       name: "Fan",
     },
   ];
-  const [showPassword, setShowPassword] = React.useState(false);
+  // const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  // const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
+  // const handleMouseDownPassword = (
+  //   event: React.MouseEvent<HTMLButtonElement>
+  // ) => {
+  //   event.preventDefault();
+  // };
   let userSignUp: UserSignUp = {
     userName: "",
     password: "",
@@ -50,16 +50,22 @@ export default function SignUp() {
     initialValues: userSignUp,
     validationSchema: signUpSchema,
     async onSubmit(values) {
-      setWaiting(true);
-      console.log(values);
-      setWaiting(false);
+      try {
+        setWaiting(true);
+        console.log(values);
+        // Add your asynchronous logic here (e.g., API calls, etc.)
+        setWaiting(false);
+      } catch (error) {
+        console.error("Error during form submission:", error);
+        setWaiting(false);
+      }
     },
   });
 
   return (
     <Container
       sx={{
-        height: "calc(100vh - 100px )",
+        marginTop: "20px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -70,7 +76,7 @@ export default function SignUp() {
         className="bg-white rounded-3xl p-8"
         style={{
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
-          maxHeight: "600px",
+          // maxHeight: "600px",
         }}
         onSubmit={formik.handleSubmit}
       >
@@ -88,7 +94,7 @@ export default function SignUp() {
           error={formik.touched.userName && Boolean(formik.errors.userName)}
           helperText={formik.touched.userName && formik.errors.userName}
         />
-        <div className="flex justify-center items-center gap-5 mt-3">
+        <div className="flex justify-center items-start gap-5 mt-3">
           <TextField
             fullWidth
             label="First Name"
@@ -114,7 +120,7 @@ export default function SignUp() {
           className="mt-2"
           fullWidth
           id="outlined-adornment-password"
-          type={showPassword ? "text" : "password"}
+          type="password"
           label="Password"
           name="password"
           value={formik.values.password}
@@ -125,8 +131,8 @@ export default function SignUp() {
         <TextField
           className="mt-2"
           fullWidth
-          id="outlined-adornment-password"
-          type={showPassword ? "text" : "password"}
+          id="outlined-adornment-confirm-password"
+          type="password"
           label="confirm Password"
           name="confirmPassword"
           value={formik.values.confirmPassword}
