@@ -96,7 +96,11 @@ export default function SignIn() {
         <div className="flex gap-2  items-center justify-center py-3">
           <Button
             type="submit"
-            sx={{ backgroundColor: "var(--main-color) !important" }}
+            sx={{
+              backgroundColor: "var(--main-color) !important",
+              fontWeight: "bold",
+              fontSize: "12pxs",
+            }}
             variant="contained"
             color="success"
           >
