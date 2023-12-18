@@ -41,7 +41,7 @@ const userSchema = mongoose.Schema({
   address: {
     type: String,
   },
-  verified: {
+  approved: {
     type: Boolean,
     default: false,
   },

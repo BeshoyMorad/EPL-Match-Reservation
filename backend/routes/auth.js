@@ -4,6 +4,8 @@ import {
   loginValidator,
   signupValidator,
   usernameValidator,
+  resetPasswordValidator,
+  editUserValidator,
 } from "../validators/userValidators.js";
 import authController from "../controllers/authController.js";
 import { verifyAuthToken } from "../middlewares/authMiddlewares.js";
@@ -32,12 +34,32 @@ authRouter.post(
   authController.approveUser
 );
 
-authRouter.post(
+authRouter.delete(
   "/remove-user",
   verifyAuthToken,
   usernameValidator,
   validateRequestSchema,
   authController.removeUser
 );
+
+authRouter.post(
+  "/reset-password",
+  verifyAuthToken,
+  resetPasswordValidator,
+  validateRequestSchema,
+  authController.resetPassword
+);
+
+authRouter.put(
+  "/user",
+  verifyAuthToken,
+  editUserValidator,
+  validateRequestSchema,
+  authController.editUser
+);
+
+authRouter.get("/user", verifyAuthToken, authController.getUser);
+
+authRouter.get("/admin", verifyAuthToken, authController.getAdmin);
 
 export default authRouter;
