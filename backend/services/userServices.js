@@ -84,7 +84,8 @@ export async function checkConfirmPassword(password, confirmPassword) {
 
 export async function checkExistingUsername(username) {
   const user = await User.findOne({ username: username });
-  if (user) {
+  const admin = await Admin.findOne({ username: username });
+  if (user || admin) {
     const error = new Error("Username already exists");
     error.statusCode = 400;
     throw error;
@@ -107,6 +108,19 @@ export async function createNewUser(userDetails) {
   });
   await newUser.save();
   return newUser;
+}
+
+export async function createNewAdmin(adminDetails) {
+  const hashedPassword = hashPassword(adminDetails.password);
+  const newAdmin = new Admin({
+    username: adminDetails.username,
+    password: hashedPassword,
+    firstName: adminDetails.firstName,
+    lastName: adminDetails.lastName,
+    email: adminDetails.email,
+  });
+  await newAdmin.save();
+  return newAdmin;
 }
 
 export async function checkUserRole(username, role) {
@@ -136,11 +150,61 @@ export async function updatePassword(user, newPassword) {
 }
 
 export async function updateUser(user, body) {
-  user.firstName = body.firstName ?? user.firstName;
-  user.lastName = body.lastName ?? user.lastName;
-  user.gender = body.gender ?? user.gender;
-  user.address = body.address ?? user.address;
-  user.city = body.city ?? user.city;
-  user.birthDate = body.birthDate ?? user.birthDate;
+  for (const key in body) {
+    user[key] = body[key];
+  }
   await user.save();
+}
+
+export async function addMatchToUser(user, matchId) {
+  user.matches.push({ matchId: matchId });
+  await user.save();
+}
+
+export async function removeMatchFromUser(user, matchId) {
+  const matchIndex = user.matches.findIndex(
+    (match) => match.matchId.toString() === matchId.toString()
+  );
+  if (matchIndex === -1) {
+    const error = new Error("Match not found");
+    error.statusCode = 400;
+    throw error;
+  }
+  user.matches.splice(matchIndex, 1);
+  await user.save();
+}
+
+export async function addReservationToUser(user, reservationId) {
+  user.reservations.push({ reservationId: reservationId });
+  await user.save();
+}
+
+export async function removeReservationFromUser(user, reservationId) {
+  const reservationIndex = user.reservations.findIndex(
+    (reservation) =>
+      reservation.reservationId.toString() === reservationId.toString()
+  );
+  if (reservationIndex === -1) {
+    const error = new Error("Reservation not found");
+    error.statusCode = 400;
+    throw error;
+  }
+  user.reservations.splice(reservationIndex, 1);
+  await user.save();
+}
+
+export async function retrieveUsers(skip, limit) {
+  skip = parseInt(skip) || 0;
+  limit = parseInt(limit) || 10;
+  const users = await User.find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .exec();
+  return users;
+}
+
+export async function retrieveUsersCount() {
+  const count = await User.countDocuments();
+  return count;
 }

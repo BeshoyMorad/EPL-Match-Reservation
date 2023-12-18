@@ -6,6 +6,8 @@ import {
   usernameValidator,
   resetPasswordValidator,
   editUserValidator,
+  getUsersValidator,
+  createAdminValidator,
 } from "../validators/userValidators.js";
 import authController from "../controllers/authController.js";
 import { verifyAuthToken } from "../middlewares/authMiddlewares.js";
@@ -58,8 +60,24 @@ authRouter.put(
   authController.editUser
 );
 
+authRouter.get(
+  "/users",
+  verifyAuthToken,
+  getUsersValidator,
+  validateRequestSchema,
+  authController.getUsers
+);
+
 authRouter.get("/user", verifyAuthToken, authController.getUser);
 
 authRouter.get("/admin", verifyAuthToken, authController.getAdmin);
+
+authRouter.post(
+  "/admin",
+  verifyAuthToken,
+  createAdminValidator,
+  validateRequestSchema,
+  authController.createAdmin
+);
 
 export default authRouter;

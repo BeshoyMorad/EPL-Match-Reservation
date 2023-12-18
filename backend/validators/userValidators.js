@@ -110,3 +110,41 @@ export const editUserValidator = [
     .isIn(["male", "female"])
     .withMessage("Gender must be either 'male' or 'female'"),
 ];
+
+export const getUsersValidator = [
+  body("skip").optional().isNumeric().withMessage("Skip must be a number"),
+  body("limit").optional().isNumeric().withMessage("Limit must be a number"),
+];
+
+export const createAdminValidator = [
+  body("username")
+    .not()
+    .isEmpty()
+    .withMessage("Username can't be empty")
+    .trim()
+    .escape()
+    .isAlphanumeric()
+    .withMessage("Username should consist of letters and numbers only"),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("Both passwords must be at least 8 characters long"),
+  body("email")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Email must not be empty")
+    .isEmail()
+    .withMessage("Email must be a valid email"),
+  body("firstName")
+    .not()
+    .isEmpty()
+    .withMessage("First Name can't be empty")
+    .isAlpha("en-US", { ignore: "s" })
+    .withMessage("First name should consist of letters only"),
+  body("lastName")
+    .not()
+    .isEmpty()
+    .withMessage("Last name can't be empty")
+    .isAlpha("en-US", { ignore: "s" })
+    .withMessage("Last name should consist of letters only"),
+];

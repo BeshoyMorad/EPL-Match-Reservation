@@ -11,6 +11,8 @@ import {
   updatePassword,
   updateUser,
   verifyUser,
+  retrieveUsers,
+  createNewAdmin,
 } from "../services/userServices.js";
 import { generateJWT } from "../utils/tokenUtils.js";
 
@@ -158,12 +160,51 @@ const getAdmin = async (req, res) => {
   }
 };
 
+const createAdmin = async (req, res) => {
+  try {
+    const adminId = req.payload.userId;
+    await getAdminById(adminId);
+    const { username, firstName, lastName, password, email } = req.body;
+    await checkExistingUsername(username);
+    await createNewAdmin({
+      username,
+      firstName,
+      lastName,
+      password,
+      email,
+    });
+    return res.status(200).json("Admin created successfully");
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
 const editUser = async (req, res) => {
   try {
     const userId = req.payload.userId;
     const user = await getUserById(userId);
     await updateUser(user, req.body);
     return res.status(200).json("User updated successfully");
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
+const getUsers = async (req, res) => {
+  try {
+    const adminId = req.payload.userId;
+    const { skip, limit } = req.body;
+    await getAdminById(adminId);
+    const users = await retrieveUsers(skip, limit);
+    return res.status(200).json(users);
   } catch (error) {
     if (error.statusCode) {
       res.status(error.statusCode).json({ error: error.message });
@@ -182,6 +223,8 @@ const authController = {
   getUser,
   getAdmin,
   editUser,
+  getUsers,
+  createAdmin,
 };
 
 export default authController;
