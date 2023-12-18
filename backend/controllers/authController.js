@@ -1,7 +1,11 @@
 import {
   authenticateUser,
   checkConfirmPassword,
+  checkExistingUsername,
   createNewUser,
+  getAdminById,
+  getUserByUsername,
+  verifyUser,
 } from "../services/userServices.js";
 import { generateJWT } from "../utils/tokenUtils.js";
 
@@ -29,6 +33,7 @@ const signup = async (req, res) => {
     const { username, firstName, lastName, password, confirmPassword, role } =
       req.body;
     await checkConfirmPassword(password, confirmPassword);
+    await checkExistingUsername(username);
     const user = await createNewUser({
       username,
       firstName,
@@ -50,9 +55,44 @@ const signup = async (req, res) => {
   }
 };
 
+const approveUser = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const adminId = req.payload.userId;
+    await getAdminById(adminId);
+    const user = getUserByUsername(username);
+    await verifyUser(user);
+    return res.status(201).json("User approved successfully");
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
+const removeUser = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const adminId = req.payload.userId;
+    await getAdminById(adminId);
+    await deleteUser(username);
+    return res.status(201).json("User removed successfully");
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
 const authController = {
   login,
   signup,
+  approveUser,
+  removeUser,
 };
 
 export default authController;

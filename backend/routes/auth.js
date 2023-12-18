@@ -3,8 +3,10 @@ import { validateRequestSchema } from "../middlewares/validationResult.js";
 import {
   loginValidator,
   signupValidator,
+  usernameValidator,
 } from "../validators/userValidators.js";
 import authController from "../controllers/authController.js";
+import { verifyAuthToken } from "../middlewares/authMiddlewares.js";
 
 const authRouter = express.Router();
 
@@ -20,6 +22,22 @@ authRouter.post(
   signupValidator,
   validateRequestSchema,
   authController.signup
+);
+
+authRouter.post(
+  "/approve-user",
+  verifyAuthToken,
+  usernameValidator,
+  validateRequestSchema,
+  authController.approveUser
+);
+
+authRouter.post(
+  "/remove-user",
+  verifyAuthToken,
+  usernameValidator,
+  validateRequestSchema,
+  authController.removeUser
 );
 
 export default authRouter;

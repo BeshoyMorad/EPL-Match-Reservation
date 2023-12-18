@@ -12,6 +12,15 @@ export const loginValidator = [
     .withMessage("Password must be at least 8 characters long"),
 ];
 
+export const usernameValidator = [
+  body("username")
+    .not()
+    .isEmpty()
+    .withMessage("Username must not be empty")
+    .trim()
+    .escape(),
+];
+
 export const signupValidator = [
   body("username")
     .not()
