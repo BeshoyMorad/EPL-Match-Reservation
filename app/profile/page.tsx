@@ -12,6 +12,8 @@ import { profileSchema } from "@/prisma/schemas/profile";
 import { useFormik } from "formik";
 import cities from "@/Database/City";
 import { optionsGender, optionsRole } from "@/Database/profile";
+import ResetPassword from "./resetPassword";
+import { useState } from "react";
 
 interface Profile {
   email: string;
@@ -25,6 +27,15 @@ interface Profile {
   city: string;
 }
 export default function Profile() {
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   let profile: Profile = {
     userName: "Eslammm",
     role: "Manager",
@@ -230,12 +241,25 @@ export default function Profile() {
           </TextField>
           <div className="flex gap-2  items-center justify-end py-3">
             <Button
+              sx={{
+                fontWeight: "bold",
+                fontSize: "14px",
+                textTransform: "capitalize",
+              }}
+              variant="outlined"
+              onClick={handleClickOpen}
+            >
+              Reset Password
+            </Button>
+            <ResetPassword open={open} onClose={handleClose} />
+            <Button
               type="submit"
               sx={{
                 backgroundColor: "var(--secondary-color) !important",
                 fontWeight: "bold",
-                fontSize: "16px",
+                fontSize: "14px",
                 marginRight: "24px",
+                textTransform: "capitalize",
               }}
               variant="contained"
               color="success"
