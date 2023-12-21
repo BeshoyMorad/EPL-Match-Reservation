@@ -13,19 +13,10 @@ import { useFormik } from "formik";
 import cities from "@/Database/City";
 import { optionsGender, optionsRole } from "@/Database/profile";
 import ResetPassword from "./resetPassword";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { userRequest } from "@/services/instance";
+import Profile from '@/modules/IProfile'
 
-interface Profile {
-  email: string;
-  username: string;
-  role: string;
-  firstName: string;
-  lastName: string;
-  address: string | null;
-  birthDate: Date | null;
-  gender: string;
-  city: string;
-}
 export default function Profile() {
   const [open, setOpen] = useState(false);
 
@@ -36,8 +27,13 @@ export default function Profile() {
   const handleClose = () => {
     setOpen(false);
   };
+  useEffect(() => {
+    userRequest.get("/user").then((response) => {
+      console.log(response.data);
+    }).catch((error) => { });
+  },[])
   let profile: Profile = {
-    username: "Eslammm",
+    userName: "Eslammm",
     role: "Manager",
     firstName: "Eslam",
     lastName: "Ashraf",
@@ -104,12 +100,12 @@ export default function Profile() {
               disabled
               fullWidth
               label="User Name"
-              id="username"
-              name="username"
-              value={formik.values.username}
+              id="userName"
+              name="userName"
+              value={formik.values.userName}
               onChange={formik.handleChange}
-              error={formik.touched.username && Boolean(formik.errors.username)}
-              helperText={formik.touched.username && formik.errors.username}
+              error={formik.touched.userName && Boolean(formik.errors.userName)}
+              helperText={formik.touched.userName && formik.errors.userName}
             />
             <TextField
               disabled
