@@ -99,11 +99,11 @@ export const editUserValidator = [
     .withMessage("City must consist of letters only"),
   body("birthDate")
     .optional()
-    .isDate()
+    .isISO8601({ strict: true, toDate: "date" })
     .withMessage("Invalid birth date format"),
   body("address")
     .optional()
-    .isAlphanumeric()
+    .isString()
     .withMessage("Address must be only letters & numbers"),
   check("gender")
     .optional()
