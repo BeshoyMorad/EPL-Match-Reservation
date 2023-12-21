@@ -1,20 +1,20 @@
 export const optionsRole = [
   {
     id: 1,
-    name: "Manager",
+    name: "manager",
   },
   {
     id: 2,
-    name: "Fan",
+    name: "fan",
   },
 ];
 export const optionsGender = [
   {
     id: 1,
-    name: "Male",
+    name: "male",
   },
   {
     id: 2,
-    name: "Female",
+    name: "female",
   },
 ];

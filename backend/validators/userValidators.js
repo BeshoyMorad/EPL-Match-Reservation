@@ -68,11 +68,11 @@ export const signupValidator = [
     .not()
     .isEmpty()
     .withMessage("Birth Date can't be empty")
-    .isDate()
+    .isISO8601({ strict: true, toDate: "date" })
     .withMessage("Invalid birth date format"),
   body("address")
     .optional()
-    .isAlphanumeric()
+    .isString()
     .withMessage("Address must be only letters & numbers"),
   body("role").trim().not().isEmpty().withMessage("Role cannot be empty"),
   check("role")

@@ -4,47 +4,20 @@ import { InputLabel, MenuItem, TextField } from "@mui/material";
 import { Container } from "@mui/material";
 import React, { useState } from "react";
 import { signUpSchema } from "@/schemas/signUp";
-import { useFormik } from "formik";
+import {  useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import cities from "@/Database/City";
+import instance from "@/services/instance"
+import {optionsRole,optionsGender} from "@/Database/profile";
+import { useRouter } from "next/navigation";
+import UserSignUp from '@/modules/ISignUp'
 
-interface UserSignUp {
-  email: string;
-  userName: string;
-  password: string;
-  confirmPassword: string;
-  role: string;
-  firstName: string;
-  lastName: string;
-  address: string | null;
-  birthDate: Date | null;
-  gender: string;
-  city: string;
-}
 export default function SignUp() {
-  const optionsRole = [
-    {
-      id: 1,
-      name: "Manager",
-    },
-    {
-      id: 2,
-      name: "Fan",
-    },
-  ];
-  const optionsGender = [
-    {
-      id: 1,
-      name: "Male",
-    },
-    {
-      id: 2,
-      name: "Female",
-    },
-  ];
-
+  const router = useRouter();
+  const [error, setError] = useState(false);
+  const  [errorMessage, setErrorMessage] = useState("");
   let userSignUp: UserSignUp = {
-    userName: "",
+    username: "",
     password: "",
     role: "",
     confirmPassword: "",
@@ -57,21 +30,25 @@ export default function SignUp() {
     email: "",
   };
 
-  const [waiting, setWaiting] = useState(false);
 
   const formik = useFormik({
     initialValues: userSignUp,
     validationSchema: signUpSchema,
     async onSubmit(values) {
-      try {
-        setWaiting(true);
-        console.log(values);
-        // Add your asynchronous logic here (e.g., API calls, etc.)
-        setWaiting(false);
-      } catch (error) {
-        console.error("Error during form submission:", error);
-        setWaiting(false);
-      }
+      const data = values;
+      data.gender = data.gender.toLowerCase();
+      data.role = data.role.toLowerCase();
+      await instance
+        .post("/signup", data)
+        .then((response) => {
+          console.log(response);
+          router.push("/signin");
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(true);
+          setErrorMessage(error.response.data.error);
+        });
     },
   });
   let formattedBirthDate = "";
@@ -103,12 +80,12 @@ export default function SignUp() {
           <TextField
             fullWidth
             label="User Name"
-            id="userName"
-            name="userName"
-            value={formik.values.userName}
+            id="username"
+            name="username"
+            value={formik.values.username}
             onChange={formik.handleChange}
-            error={formik.touched.userName && Boolean(formik.errors.userName)}
-            helperText={formik.touched.userName && formik.errors.userName}
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
           />
           <TextField
             fullWidth
@@ -267,6 +244,15 @@ export default function SignUp() {
             </MenuItem>
           ))}
         </TextField>
+        {error
+          &&
+          <div
+            className="flex justify-center items-start gap-5 mt-3"
+            style={{ color: "red"}}
+          >
+            {errorMessage}
+          </div>
+        }
         <div className="flex gap-2  items-center justify-center py-3">
           <label>Do you have an account?</label>
           <Button

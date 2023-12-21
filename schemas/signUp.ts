@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 export const signUpSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
-  userName: yup.string().required("UserName is required"),
+  username: yup.string().required("User Name is required"),
   firstName: yup.string().required("FirstName is required"),
   lastName: yup.string().required("LastName is required"),
   password: yup
