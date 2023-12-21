@@ -6,7 +6,7 @@ import CakeIcon from "@mui/icons-material/Cake";
 import GroupIcon from "@mui/icons-material/Group";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useEffect, useState } from "react";
-import instance from "@/services/instance";
+import { userRequest } from "@/services/instance";
 import moment from "moment";
 
 export default function AdminPanel() {
@@ -14,7 +14,7 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await instance.get("/unverified-users");
+      const response = await userRequest.get("/unverified-users");
       setUsers(response.data);
     };
 
@@ -22,7 +22,7 @@ export default function AdminPanel() {
   }, []);
 
   const approveUser = async (username: string) => {
-    await instance.post("/approve-user", { username });
+    await userRequest.post("/approve-user", { username });
     const updatedUsers = users.filter((user) => user.username !== username);
     setUsers(updatedUsers);
   };

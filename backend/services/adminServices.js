@@ -38,7 +38,7 @@ export async function createNewAdmin(adminDetails) {
 }
 
 export async function retrieveUsers(unverified = false) {
-  filter = unverified ? { approved: false } : {};
+  const filter = unverified ? { approved: false } : {};
   const users = await User.find(filter).sort({ createdAt: -1 }).exec();
   return users;
 }

@@ -171,3 +171,5 @@ export async function removeReservationFromUser(user, reservationId) {
   user.reservations.splice(reservationIndex, 1);
   await user.save();
 }
+
+
