@@ -3,10 +3,10 @@ import { IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useEffect, useState } from "react";
-import instance from "@/services/instance";
+import { userRequest } from "@/services/instance";
 
 const handleDelete = async (username: string) => {
-  await instance.delete("/remove-user/", { data: { username } });
+  await userRequest.delete("/remove-user/", { data: { username } });
   window.location.reload();
 };
 
@@ -39,7 +39,7 @@ export default function ManageUsers() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await instance.get("/users");
+      const response = await userRequest.get("/users");
 
       const updatedUsers = response.data.map((user: IUser) => {
         return {
