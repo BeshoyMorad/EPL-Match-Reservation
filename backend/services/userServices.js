@@ -32,6 +32,14 @@ export async function verifyUser(user) {
   await user.save();
 }
 
+export function checkAuthority(user) {
+  if (!user.approved) {
+    const error = new Error("User is not yet authorized");
+    error.statusCode = 400;
+    throw error;
+  }
+}
+
 export async function deleteUser(username) {
   const deletedUser = await User.findOneAndDelete({ username: username });
   if (!deletedUser) {
@@ -39,16 +47,6 @@ export async function deleteUser(username) {
     error.statusCode = 400;
     throw error;
   }
-}
-
-export async function getAdminById(adminId) {
-  const admin = await Admin.findById(adminId);
-  if (!admin) {
-    const error = new Error("This user is not an admin");
-    error.statusCode = 400;
-    throw error;
-  }
-  return admin;
 }
 
 export async function authenticateUser(username, password) {
@@ -60,18 +58,6 @@ export async function authenticateUser(username, password) {
     throw error;
   }
   return user;
-}
-
-export async function authenticateAdmin(username, password) {
-  const admin = await Admin.findOne({ username: username });
-  if (!admin) return null;
-  const doMatch = comparePasswords(password, admin.password);
-  if (!doMatch) {
-    const error = new Error("Invalid admin password");
-    error.statusCode = 400;
-    throw error;
-  }
-  return admin;
 }
 
 export async function checkConfirmPassword(password, confirmPassword) {
@@ -110,19 +96,6 @@ export async function createNewUser(userDetails) {
   return newUser;
 }
 
-export async function createNewAdmin(adminDetails) {
-  const hashedPassword = hashPassword(adminDetails.password);
-  const newAdmin = new Admin({
-    username: adminDetails.username,
-    password: hashedPassword,
-    firstName: adminDetails.firstName,
-    lastName: adminDetails.lastName,
-    email: adminDetails.email,
-  });
-  await newAdmin.save();
-  return newAdmin;
-}
-
 export async function checkUserRole(username, role) {
   const user = await getUserByUsername(username);
   if (user.role !== role) {
@@ -144,6 +117,12 @@ export async function checkOldPassword(userId, password) {
 }
 
 export async function updatePassword(user, newPassword) {
+  const doMatch = comparePasswords(newPassword, user.password);
+  if (doMatch) {
+    const error = new Error("New password is the same as the old one");
+    error.statusCode = 400;
+    throw error;
+  }
   const hashedPassword = hashPassword(newPassword);
   user.password = hashedPassword;
   await user.save();
@@ -191,20 +170,4 @@ export async function removeReservationFromUser(user, reservationId) {
   }
   user.reservations.splice(reservationIndex, 1);
   await user.save();
-}
-
-export async function retrieveUsers(skip, limit) {
-  skip = parseInt(skip) || 0;
-  limit = parseInt(limit) || 10;
-  const users = await User.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .exec();
-  return users;
-}
-
-export async function retrieveUsersCount() {
-  const count = await User.countDocuments();
-  return count;
 }

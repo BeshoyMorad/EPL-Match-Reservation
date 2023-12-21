@@ -1,19 +1,23 @@
 import {
-  authenticateAdmin,
   authenticateUser,
   checkConfirmPassword,
   checkExistingUsername,
   checkOldPassword,
   createNewUser,
-  getAdminById,
   getUserById,
   getUserByUsername,
   updatePassword,
   updateUser,
   verifyUser,
+  checkAuthority,
+  deleteUser,
+} from "../services/userServices.js";
+import {
+  authenticateAdmin,
+  getAdminById,
   retrieveUsers,
   createNewAdmin,
-} from "../services/userServices.js";
+} from "../services/adminServices.js";
 import { generateJWT } from "../utils/tokenUtils.js";
 
 const login = async (req, res) => {
@@ -21,14 +25,14 @@ const login = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const admin = await authenticateAdmin(username, password);
-    const user = admin ?? (await authenticateUser(username, password));
-    const token = generateJWT(user);
     const isAdmin = admin !== null;
+    const user = admin ?? (await authenticateUser(username, password));
+    if (!isAdmin) checkAuthority(user);
+    const token = generateJWT(user);
     return res.status(200).json({
-      username: username,
-      token: token,
-      isAdmin: isAdmin,
-      approved: isAdmin ? undefined : user.approved,
+      username,
+      token,
+      isAdmin,
     });
   } catch (error) {
     if (error.statusCode) {
@@ -87,7 +91,7 @@ const approveUser = async (req, res) => {
     const { username } = req.body;
     const adminId = req.payload.userId;
     await getAdminById(adminId);
-    const user = getUserByUsername(username);
+    const user = await getUserByUsername(username);
     await verifyUser(user);
     return res.status(200).json("User approved successfully");
   } catch (error) {
