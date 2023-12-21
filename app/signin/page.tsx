@@ -6,23 +6,22 @@ import React, { useState } from "react";
 import { signInSchema } from "@/schemas/signIn";
 import { useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import instance from "@/services/instance";
+import { useRouter } from "next/navigation";
 
 interface UserLogin {
-  userName: string;
+  username: string;
   password: string;
 }
 export default function SignIn() {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const router = useRouter();
 
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
   let userLogin: UserLogin = {
-    userName: "",
+    username: "",
     password: "",
   };
 
@@ -32,9 +31,18 @@ export default function SignIn() {
     initialValues: userLogin,
     validationSchema: signInSchema,
     async onSubmit(values) {
-      setWaiting(true);
-      console.log(values);
-      setWaiting(false);
+      const data = values;
+      await instance
+        .post("/login", data)
+        .then((response) => {
+          console.log(response);
+          router.push("/");
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(true);
+          setErrorMessage(error.response.data.error);
+        });
     },
   });
 
@@ -60,12 +68,12 @@ export default function SignIn() {
           fullWidth
           sx={{ mt: 3 }}
           label="User Name"
-          id="userName"
-          name="userName"
-          value={formik.values.userName}
+          id="username"
+          name="username"
+          value={formik.values.username}
           onChange={formik.handleChange}
-          error={formik.touched.userName && Boolean(formik.errors.userName)}
-          helperText={formik.touched.userName && formik.errors.userName}
+          error={formik.touched.username && Boolean(formik.errors.username)}
+          helperText={formik.touched.username && formik.errors.username}
         />
         <TextField
           className="mt-2"
@@ -79,6 +87,14 @@ export default function SignIn() {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
+        {error && (
+          <div
+            className="flex justify-center items-start gap-5 mt-3"
+            style={{ color: "red" }}
+          >
+            {errorMessage}
+          </div>
+        )}
         <div className="flex gap-2  items-center justify-center py-3">
           <label>Do not have an account?</label>
           <Button
