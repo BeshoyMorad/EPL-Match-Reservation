@@ -1,13 +1,10 @@
 import jwt from "jsonwebtoken";
 import { getUserById } from "../services/userServices.js";
+import AuthServices from "../services/AuthServices.js";
 
 export function verifyAuthToken(req, res, next) {
   try {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader.split(" ")[1];
-    const payload = jwt.verify(token, process.env.TOKEN_SECRET);
-
-    req.payload = payload;
+    req.payload = AuthServices.getPayload(req);
     next();
   } catch (err) {
     res.status(401).json("Invalid Token");
