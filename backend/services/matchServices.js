@@ -33,6 +33,11 @@ export function compareTeamIds(homeTeamId, awayTeamId) {
   }
 }
 
+export async function addMatchReservation(match, reservation) {
+  match.reservations.push({ reservationId: reservation._id });
+  await match.save();
+}
+
 export async function addNewMatch(matchDetails) {
   const newMatch = new Match(matchDetails);
   await newMatch.save();
@@ -79,7 +84,7 @@ export async function computeReservedSeats(matchId) {
   const match = await getMatchById(matchId);
   const reservations = match.reservations;
   const reservedSeats = reservations.map((reservation) =>
-    reservation.seats.map((seat) => seat.seatNumber)
+    reservation.seatIndex
   );
   return reservedSeats;
 }
@@ -88,8 +93,8 @@ export async function computeVacantSeats(matchId) {
   const match = await getMatchById(matchId);
   const venue = match.venueId;
   const totalCapacity = venue.numberOfRows * venue.seatsPerRow;
-  const reservedSeats = match.reservations.map((reservation) =>
-    reservation.seats.map((seat) => seat.seatNumber)
+  const reservedSeats = reservations.map((reservation) =>
+    reservation.seatIndex
   );
   const vacantSeats = [];
   for (let i = 1; i <= totalCapacity; i++) {

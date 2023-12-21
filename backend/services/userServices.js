@@ -172,4 +172,12 @@ export async function removeReservationFromUser(user, reservationId) {
   await user.save();
 }
 
+export async function addUserReservation(user, reservation) {
+  user.reservations.push({ reservationId: reservation._id });
+  await user.save();
+}
 
+export async function addUserMatch(user, matchId) {
+  user.matches.push({ matchId: matchId });
+  await user.save();
+}

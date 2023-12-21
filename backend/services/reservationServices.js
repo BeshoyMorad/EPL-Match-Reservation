@@ -8,13 +8,14 @@ class reservationServices {
 
   static createReservation = async (reservation) => {
     let newTicketNumber = this.generateTimestampBasedID;
-    const reservation = await new Reservation({
+    const newReservation = await new Reservation({
       ticketNumber: newTicketNumber,
       reservationDate: reservation.date,
       customerId: reservation.customerId,
       matchId: reservation.matchId,
       seatIndex: reservation.seatIndex,
     });
+    return newReservation;
   };
 }
 
