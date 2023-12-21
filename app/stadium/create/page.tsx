@@ -8,17 +8,16 @@ import {
   InputLabel,
   Button,
 } from "@mui/material";
-import { stadiumSchema } from "@/prisma/schemas/Stadium";
+import { stadiumSchema } from "@/schemas/Stadium";
 import { useFormik } from "formik";
 import { useState } from "react";
 
-interface Stadium{
-  name: string,
-  rows: number|null,
-  cols:number|null,
+interface Stadium {
+  name: string;
+  rows: number | null;
+  cols: number | null;
 }
 export default function CreateStadium() {
-  
   let stadium: Stadium = {
     name: "",
     rows: null,

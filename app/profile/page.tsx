@@ -8,7 +8,7 @@ import {
   InputLabel,
   Button,
 } from "@mui/material";
-import { profileSchema } from "@/prisma/schemas/profile";
+import { profileSchema } from "@/schemas/profile";
 import { useFormik } from "formik";
 import cities from "@/Database/City";
 import { optionsGender, optionsRole } from "@/Database/profile";

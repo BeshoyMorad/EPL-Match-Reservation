@@ -1,6 +1,6 @@
 "use client";
 
-import { matchSchema } from "@/prisma/schemas/match";
+import { matchSchema } from "@/schemas/match";
 import { Button, MenuItem, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";

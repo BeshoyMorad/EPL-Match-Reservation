@@ -3,10 +3,9 @@ import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import { Container } from "@mui/material";
 import React, { useState } from "react";
-import { signInSchema } from "@/prisma/schemas/signIn";
+import { signInSchema } from "@/schemas/signIn";
 import { useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
-
 
 interface UserLogin {
   userName: string;

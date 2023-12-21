@@ -10,7 +10,7 @@ import {
 import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
-import { resetPasswordSchema } from "@/prisma/schemas/ResetPassword";
+import { resetPasswordSchema } from "@/schemas/ResetPassword";
 
 interface ResetPasswordInterface {
   oldPassword: string;
@@ -80,7 +80,7 @@ export default function ResetPassword(props: ResetPasswordProps) {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent dividers >
+      <DialogContent dividers>
         <form onSubmit={formik.handleSubmit}>
           <TextField
             className="mt-2"

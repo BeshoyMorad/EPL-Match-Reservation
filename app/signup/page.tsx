@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import { InputLabel, MenuItem, TextField } from "@mui/material";
 import { Container } from "@mui/material";
 import React, { useState } from "react";
-import { signUpSchema } from "@/prisma/schemas/signUp";
+import { signUpSchema } from "@/schemas/signUp";
 import { useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import cities from "@/Database/City";
@@ -74,10 +74,10 @@ export default function SignUp() {
       }
     },
   });
- let formattedBirthDate = "";
- if (formik.values.birthDate instanceof Date) {
-   formattedBirthDate = formik.values.birthDate.toISOString().split("T")[0];
- }
+  let formattedBirthDate = "";
+  if (formik.values.birthDate instanceof Date) {
+    formattedBirthDate = formik.values.birthDate.toISOString().split("T")[0];
+  }
   return (
     <Container
       sx={{
