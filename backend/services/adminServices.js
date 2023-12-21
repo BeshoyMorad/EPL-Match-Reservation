@@ -47,12 +47,13 @@ export async function retrieveUsers(skip, limit, unverified = false) {
       .limit(limit)
       .sort({ createdAt: -1 })
       .exec();
+  } else {
+    users = await User.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
   }
-  users = await User.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .exec();
   return users;
 }
 
