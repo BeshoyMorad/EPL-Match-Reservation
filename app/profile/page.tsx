@@ -17,7 +17,7 @@ import { useState } from "react";
 
 interface Profile {
   email: string;
-  userName: string;
+  username: string;
   role: string;
   firstName: string;
   lastName: string;
@@ -37,7 +37,7 @@ export default function Profile() {
     setOpen(false);
   };
   let profile: Profile = {
-    userName: "Eslammm",
+    username: "Eslammm",
     role: "Manager",
     firstName: "Eslam",
     lastName: "Ashraf",
@@ -104,12 +104,12 @@ export default function Profile() {
               disabled
               fullWidth
               label="User Name"
-              id="userName"
-              name="userName"
-              value={formik.values.userName}
+              id="username"
+              name="username"
+              value={formik.values.username}
               onChange={formik.handleChange}
-              error={formik.touched.userName && Boolean(formik.errors.userName)}
-              helperText={formik.touched.userName && formik.errors.userName}
+              error={formik.touched.username && Boolean(formik.errors.username)}
+              helperText={formik.touched.username && formik.errors.username}
             />
             <TextField
               disabled
