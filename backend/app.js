@@ -8,12 +8,14 @@ import { fileURLToPath } from "url";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import mainRouter from "./routes/router.js";
+import Team from "./models/Team.js";
+import teams from "./seeds/teams.js";
 
 const app = express();
 
-const port = process.env.PORT || 3000;
-
 dotenv.config();
+
+const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
@@ -24,8 +26,18 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 let DB_URL = process.env.MONGO_URL.trim();
 mongoose
   .connect(DB_URL)
-  .then(() => {
+  .then(async () => {
     console.log("Connected to MongoDB");
+
+    if ((await Team.countDocuments()) === 0) {
+      teams.forEach(async (team) => {
+        const newTeam = new Team({
+          name: team,
+          imagePath: `/images/${team}.png`,
+        });
+        await newTeam.save();
+      });
+    }
   })
   .catch((error) => {
     console.log("Unable to connect to MongoDB:", error);
