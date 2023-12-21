@@ -8,6 +8,10 @@ import Team from "./models/Team.js";
 import teams from "./seeds/teams.js";
 import http from "http";
 import { Server } from "socket.io";
+import checkUserServices from "./services/checkUserServices.js";
+import AuthServices from "./services/AuthServices.js";
+
+import {computeReservedSeats} from "./services/matchServices.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -46,9 +50,27 @@ io.on("connection", (socket) => {
   socket.emit("seatsStatus", seats);
 
   // Client side says there is a user want to reserve
-  //reservation consists of matchId,Date,CustomerId,seats(seatRow,seatColumn),token
-  socket.on("reserveSeat", (reservation) => {
-    const user = None
+  // reservation consists of matchId,Date,seats(index),token
+  socket.on("reserveSeat", async (reservation) => {
+    const payload = AuthServices.getPayload({
+      headers: { authorization: reservation.token },
+    });
+    const user = await checkUserServices.getUserById(payload.userId);
+    //Check if seat is taken
+    const reservedSeats = await computeReservedSeats(reservation.matchId);
+    let notReserved = false
+    for (let seatIndex in reservation.seats) {
+      if (seatIndex in reservedSeats) {
+        io.emit(
+          "reservationError",
+          `Seat Number ${seatIndex} has been reserved already`
+        );
+        break;
+      }
+
+    }
+
+
     /*if (seats[seatIndex]) {
       seats[seatIndex] = false;
       // Broadcast updated seats status to all clients
