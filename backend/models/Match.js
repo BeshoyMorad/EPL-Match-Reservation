@@ -42,10 +42,8 @@ const matchSchema = mongoose.Schema({
   ],
   reservations: [
     {
-      reservationId: {
-        type: Schema.Types.ObjectId,
-        ref: "Reservation",
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Reservation",
     },
   ],
 });

@@ -21,9 +21,13 @@ const reservationSchema = mongoose.Schema({
   },
   seats: [
     {
-      seatId: {
-        type: Schema.Types.ObjectId,
-        ref: "Seat",
+      seatNumber: {
+        type: Number,
+        required: true,
+      },
+      seatRow: {
+        type: Number,
+        required: true,
       },
     },
   ],
