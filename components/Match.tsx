@@ -20,7 +20,10 @@ export default function Match({ match }: { match: IMatch }) {
       </Link>
 
       <div className="book-ticket mt-5">
-        <Button className="flex items-center gap-2 bg-[var(--main-color)] hover:bg-[#32d360] text-white m-auto">
+        <Button
+          href={`/match/reserve/${match._id}`}
+          className="flex items-center gap-2 bg-[var(--main-color)] hover:bg-[#32d360] text-white m-auto"
+        >
           <ConfirmationNumberOutlinedIcon />
           Book ticket
         </Button>
