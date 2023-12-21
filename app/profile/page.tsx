@@ -75,7 +75,7 @@ export default function Profile() {
           background:
             "linear-gradient(195deg, rgba(73, 163, 241, 0.6), rgba(26, 115, 232, 0.6)) 50% center / cover, url(/images/staduim.jpg) transparent",
           borderRadius: "9px",
-          height: " 200px",
+          height: " 600px",
           width: " 100%",
           backgroundPosition: "center",
           backgroundSize: "cover",
@@ -88,7 +88,7 @@ export default function Profile() {
           width: "100%",
           maxWidth: "1000px",
           background: "white",
-          marginTop: "-100px",
+          marginTop: "-550px",
           position: "relative",
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
           borderRadius: "25px",
