@@ -33,6 +33,7 @@ const login = async (req, res) => {
       username,
       token,
       isAdmin,
+      role: isAdmin ? "admin" : user.role,
     });
   } catch (error) {
     if (error.statusCode) {

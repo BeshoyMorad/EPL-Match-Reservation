@@ -20,7 +20,12 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const router = useRouter();
-  const [cookies, setCookies] = useCookies(["token", "username", "isAdmin"]);
+  const [cookies, setCookies] = useCookies([
+    "token",
+    "username",
+    "isAdmin",
+    "role",
+  ]);
 
   let userLogin: UserLogin = {
     username: "",
@@ -46,6 +51,10 @@ export default function SignIn() {
             expires: time,
           });
           setCookies("isAdmin", response.data.isAdmin, {
+            path: "/",
+            expires: time,
+          });
+          setCookies("role", response.data.role, {
             path: "/",
             expires: time,
           });
@@ -83,7 +92,7 @@ export default function SignIn() {
         </h1>
         <TextField
           fullWidth
-          sx={{ mt: 3 }}
+          sx={{ mt: 3, mb: 2 }}
           label="User Name"
           id="username"
           name="username"
