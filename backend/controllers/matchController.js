@@ -79,8 +79,7 @@ const getMatch = async (req, res) => {
 
 const getMatches = async (req, res) => {
   try {
-    const { skip, limit } = req.body;
-    const matches = await retrieveMatches(skip, limit);
+    const matches = await retrieveMatches();
     return res.status(200).json(matches);
   } catch (error) {
     if (error.statusCode) {

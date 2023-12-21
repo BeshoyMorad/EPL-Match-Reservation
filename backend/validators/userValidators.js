@@ -111,11 +111,6 @@ export const editUserValidator = [
     .withMessage("Gender must be either 'male' or 'female'"),
 ];
 
-export const getUsersValidator = [
-  body("skip").optional().isNumeric().withMessage("Skip must be a number"),
-  body("limit").optional().isNumeric().withMessage("Limit must be a number"),
-];
-
 export const createAdminValidator = [
   body("username")
     .not()
