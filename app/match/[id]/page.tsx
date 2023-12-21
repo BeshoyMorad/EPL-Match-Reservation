@@ -2,10 +2,11 @@
 import { Container } from "@mui/material";
 import MatchSection from "@/components/MatchSection";
 import SportsIcon from "@mui/icons-material/Sports";
+import ChairIcon from "@mui/icons-material/Chair";
 
 export default function MatchDetails({ params }: { params: { id: string } }) {
   const match = {
-    id: 1,
+    _id: "1",
     homeTeam: "Team 1",
     awayTeam: "Team 2",
     venue: "Venue",
@@ -13,7 +14,13 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
     mainReferee: "Eslam",
     linesman1: "Linesman 1",
     linesman2: "Linesman 2",
+
   };
+  const board = [
+    ["R", "F", "F", "F", "F"],
+    ["R", "R", "R", "F", "F"],
+    ["R", "F", "R", "F", "F"],
+  ];
   console.log(params.id);
   return (
     <Container
@@ -57,6 +64,21 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
               <SportsIcon></SportsIcon> lines man 2:
             </label>
             {match.linesman2}
+          </div>
+        </div>
+        <div className="flex gap-3 justify-center items-center mt-3">
+          <div>
+            {board.map((row, i) => (
+              <div key={i}>
+                {row.map((cell, j) => (
+                  <span key={j} className="m-1">
+                    <ChairIcon
+                      style={{ color: cell === "R" ? "red" : "black" }}
+                    ></ChairIcon>
+                  </span>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </div>
