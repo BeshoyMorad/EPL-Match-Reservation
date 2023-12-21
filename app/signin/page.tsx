@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import instance from "@/services/instance";
 import { useRouter } from "next/navigation";
+import { useCookies } from "react-cookie";
 
 interface UserLogin {
   username: string;
@@ -19,13 +20,12 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const router = useRouter();
+  const [cookies, setCookies] = useCookies(["token", "username", "isAdmin"]);
 
   let userLogin: UserLogin = {
     username: "",
     password: "",
   };
-
-  const [waiting, setWaiting] = useState(false);
 
   const formik = useFormik({
     initialValues: userLogin,
@@ -35,13 +35,30 @@ export default function SignIn() {
       await instance
         .post("/login", data)
         .then((response) => {
-          console.log(response);
-          router.push("/");
+          const time = new Date();
+          time.setDate(time.getDate() + 90);
+          setCookies("token", response.data.token, {
+            path: "/",
+            expires: time,
+          });
+          setCookies("username", response.data.username, {
+            path: "/",
+            expires: time,
+          });
+          setCookies("isAdmin", response.data.isAdmin, {
+            path: "/",
+            expires: time,
+          });
+          if (response.data.isAdmin) {
+            router.push("/admin");
+          } else {
+            router.push("/");
+          }
         })
         .catch((error) => {
           console.log(error);
           setError(true);
-          setErrorMessage(error.response.data.error);
+          setErrorMessage(error.response.data.errors[0]);
         });
     },
   });
