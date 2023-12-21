@@ -1,11 +1,15 @@
 import axios from "axios";
 
-const instance = axios.create({
-  baseURL: "http://localhost:5000",
-  withCredentials: true,
-  crossDomain: true,
+const BASE_URL = "http://localhost:5000";
+const TOKEN = "";
+
+export const publicRequest = axios.create({
+  baseURL: BASE_URL,
+});
+
+export const userRequest = axios.create({
+  baseURL: BASE_URL,
   headers: {
-    "Content-Type": "application/json",
+    Authorization: `Bearer ${TOKEN}`,
   },
 });
-export default instance;
