@@ -72,7 +72,7 @@ export const signupValidator = [
     .withMessage("Invalid birth date format"),
   body("address")
     .optional()
-    .isAlphanumeric()
+    .isAlpha("en-US", { ignore: "s" })
     .withMessage("Address must be only letters & numbers"),
   body("role").trim().not().isEmpty().withMessage("Role cannot be empty"),
   check("role")

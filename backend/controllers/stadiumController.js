@@ -5,7 +5,7 @@ import errorHandlingUtils from "../utils/errorHandlingUtils.js";
 class stadiumController {
   static createStadium = async (req, res) => {
     try {
-      const user = await checkUserServices.isManager(req.body.username);
+      const user = await checkUserServices.isManager(req.payload.username);
       const stadiumId = await stadiumServices.createStadium(req.body);
       res
         .status(201)
@@ -15,6 +15,7 @@ class stadiumController {
           stadiumId,
         });
     } catch (error) {
+      console.log(error)
       let formattedError = errorHandlingUtils.formatError(error);
       res
         .status(formattedError.statusCode)
