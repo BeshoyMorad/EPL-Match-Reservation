@@ -4,7 +4,7 @@ import QueueOutlinedIcon from "@mui/icons-material/QueueOutlined";
 
 export default function Home() {
   const match = {
-    id: 1,
+    _id: "1",
     homeTeam: "Team 1",
     awayTeam: "Team 2",
     venue: "Venue",

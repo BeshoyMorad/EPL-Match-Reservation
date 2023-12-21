@@ -13,6 +13,10 @@ const stadiumSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  createdAt: {
+    type: Date,
+    required: true,
+  },
 });
 
 const Stadium = mongoose.model("Stadium", stadiumSchema);
