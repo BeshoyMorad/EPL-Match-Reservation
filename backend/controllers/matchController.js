@@ -1,5 +1,7 @@
 import {
   addNewMatch,
+  computeReservedSeats,
+  computeVacantSeats,
   getMatchById,
   retrieveMatches,
   updateMatch,
@@ -89,11 +91,41 @@ const getMatches = async (req, res) => {
   }
 };
 
+const getVacantSeats = async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const vacantSeats = await computeVacantSeats(matchId);
+    return res.status(200).json(vacantSeats);
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
+const getReservedSeats = async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const reservedSeats = await computeReservedSeats(matchId);
+    return res.status(200).json(reservedSeats);
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
 const matchController = {
   createMatch,
   editMatch,
   getMatch,
   getMatches,
+  getVacantSeats,
+  getReservedSeats,
 };
 
 export default matchController;

@@ -50,7 +50,8 @@ export async function getMatchById(matchId) {
   const match = await Match.findById(matchId)
     .populate("homeTeamId")
     .populate("awayTeamId")
-    .populate("venueId");
+    .populate("venueId")
+    .populate("reservations");
   if (!match) {
     const error = new Error("Match not found");
     error.statusCode = 400;
@@ -76,4 +77,29 @@ export async function retrieveMatches(skip, limit) {
     .skip(skip)
     .limit(limit);
   return matches;
+}
+
+export async function computeReservedSeats(matchId) {
+  const match = await getMatchById(matchId);
+  const reservations = match.reservations;
+  const reservedSeats = reservations.map((reservation) =>
+    reservation.seats.map((seat) => seat.seatNumber)
+  );
+  return reservedSeats;
+}
+
+export async function computeVacantSeats(matchId) {
+  const match = await getMatchById(matchId);
+  const venue = match.venueId;
+  const totalCapacity = venue.numberOfRows * venue.seatsPerRow;
+  const reservedSeats = match.reservations.map((reservation) =>
+    reservation.seats.map((seat) => seat.seatNumber)
+  );
+  const vacantSeats = [];
+  for (let i = 1; i <= totalCapacity; i++) {
+    if (!reservedSeats.includes(i)) {
+      vacantSeats.push(i);
+    }
+  }
+  return vacantSeats;
 }
