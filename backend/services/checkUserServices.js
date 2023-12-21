@@ -1,5 +1,5 @@
-import User from "../models/User";
-import errorHandlingUtils from "../utils/errorHandlingUtils";
+import User from "../models/User.js";
+import errorHandlingUtils from "../utils/errorHandlingUtils.js";
 
 class checkUserServices {
   static isFan = async (username) => {
