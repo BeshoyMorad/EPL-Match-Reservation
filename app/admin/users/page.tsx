@@ -2,9 +2,16 @@
 import { IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useEffect, useState } from "react";
+import instance from "@/services/instance";
+
+const handleDelete = async (username: string) => {
+  await instance.delete("/remove-user/", { data: { username } });
+  window.location.reload();
+};
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 70 },
+  { field: "id", headerName: "ID", width: 240 },
   { field: "firstName", headerName: "First name", width: 150 },
   { field: "lastName", headerName: "Last name", width: 150 },
   { field: "username", headerName: "Username", width: 200 },
@@ -17,7 +24,7 @@ const columns: GridColDef[] = [
         <>
           <IconButton
             color="error"
-            // onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleDelete(params.row.username)}
           >
             <DeleteOutlineIcon />
           </IconButton>
@@ -27,26 +34,31 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    firstName: "Beshoy",
-    lastName: "Morad",
-    username: "iiBesh00",
-  },
-  {
-    id: 2,
-    firstName: "Beshoy",
-    lastName: "Morad",
-    username: "iiBesh00",
-  },
-];
-
 export default function ManageUsers() {
+  const [users, setUsers] = useState<IUser[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await instance.get("/users");
+
+      const updatedUsers = response.data.map((user: IUser) => {
+        return {
+          id: user._id,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        };
+      });
+      setUsers(updatedUsers);
+    };
+
+    fetchUsers();
+  }, []);
+
   return (
     <div style={{ height: 650, width: "100%" }}>
       <DataGrid
-        rows={rows}
+        rows={users}
         columns={columns}
         initialState={{
           pagination: {
