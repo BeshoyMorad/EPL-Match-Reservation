@@ -6,7 +6,6 @@ import {
   usernameValidator,
   resetPasswordValidator,
   editUserValidator,
-  getUsersValidator,
   createAdminValidator,
 } from "../validators/userValidators.js";
 import authController from "../controllers/authController.js";
@@ -60,19 +59,11 @@ authRouter.put(
   authController.editUser
 );
 
-authRouter.get(
-  "/users",
-  verifyAuthToken,
-  getUsersValidator,
-  validateRequestSchema,
-  authController.getUsers
-);
+authRouter.get("/users", verifyAuthToken, authController.getUsers);
 
 authRouter.get(
   "/unverified-users",
   verifyAuthToken,
-  getUsersValidator,
-  validateRequestSchema,
   authController.getUnverifiedUsers
 );
 

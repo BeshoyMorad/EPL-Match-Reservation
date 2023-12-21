@@ -67,15 +67,11 @@ export async function updateMatch(match, body) {
   await match.save();
 }
 
-export async function retrieveMatches(skip, limit) {
-  if (!skip) skip = 0;
-  if (!limit) limit = 10;
+export async function retrieveMatches() {
   const matches = await Match.find()
     .populate("homeTeamId")
     .populate("awayTeamId")
-    .populate("venueId")
-    .skip(skip)
-    .limit(limit);
+    .populate("venueId");
   return matches;
 }
 

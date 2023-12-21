@@ -205,9 +205,8 @@ const editUser = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const adminId = req.payload.userId;
-    const { skip, limit } = req.body;
     await getAdminById(adminId);
-    const users = await retrieveUsers(skip, limit);
+    const users = await retrieveUsers();
     return res.status(200).json(users);
   } catch (error) {
     if (error.statusCode) {
@@ -221,9 +220,8 @@ const getUsers = async (req, res) => {
 const getUnverifiedUsers = async (req, res) => {
   try {
     const adminId = req.payload.userId;
-    const { skip, limit } = req.body;
     await getAdminById(adminId);
-    const users = await retrieveUsers(skip, limit, true);
+    const users = await retrieveUsers(true);
     return res.status(200).json(users);
   } catch (error) {
     if (error.statusCode) {
