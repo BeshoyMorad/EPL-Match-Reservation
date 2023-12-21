@@ -89,7 +89,7 @@ export default function SignIn() {
           helperText={formik.touched.username && formik.errors.username}
         />
         <TextField
-          className="mt-2"
+          sx={{ mt: 2 }}
           fullWidth
           id="outlined-adornment-password"
           type="password"
