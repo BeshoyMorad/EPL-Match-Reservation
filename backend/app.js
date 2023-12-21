@@ -4,6 +4,7 @@ import multer from "multer";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
+import cors from "cors";
 import { fileURLToPath } from "url";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
@@ -43,15 +44,21 @@ mongoose
     console.log("Unable to connect to MongoDB:", error);
   });
 
-app.use((_req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,DELETE,PATCH,OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  next();
-});
+// app.use((_req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+//   );
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+//   next();
+// });
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 const options = {
   definition: {
