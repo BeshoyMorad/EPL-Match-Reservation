@@ -7,7 +7,7 @@ import { signUpSchema } from "@/schemas/signUp";
 import {  useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import cities from "@/Database/City";
-import instance from "@/services/instance"
+import { publicRequest } from "@/services/instance";
 import {optionsRole,optionsGender} from "@/Database/profile";
 import { useRouter } from "next/navigation";
 import UserSignUp from '@/modules/ISignUp'
@@ -38,7 +38,7 @@ export default function SignUp() {
       const data = values;
       data.gender = data.gender.toLowerCase();
       data.role = data.role.toLowerCase();
-      await instance
+      await publicRequest
         .post("/signup", data)
         .then((response) => {
           console.log(response);
@@ -47,7 +47,7 @@ export default function SignUp() {
         .catch((error) => {
           console.log(error);
           setError(true);
-          setErrorMessage(error.response.data.error);
+          setErrorMessage(error.response.data.error[0]);
         });
     },
   });

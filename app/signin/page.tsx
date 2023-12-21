@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { signInSchema } from "@/schemas/signIn";
 import { useFormik } from "formik";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
-import instance from "@/services/instance";
+import { publicRequest } from "@/services/instance";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 
@@ -32,7 +32,7 @@ export default function SignIn() {
     validationSchema: signInSchema,
     async onSubmit(values) {
       const data = values;
-      await instance
+      await publicRequest
         .post("/login", data)
         .then((response) => {
           const time = new Date();
@@ -58,7 +58,7 @@ export default function SignIn() {
         .catch((error) => {
           console.log(error);
           setError(true);
-          setErrorMessage(error.response.data.errors[0]);
+          setErrorMessage(error.response.data.error[0]);
         });
     },
   });
