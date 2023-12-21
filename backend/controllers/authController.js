@@ -218,6 +218,22 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getUnverifiedUsers = async (req, res) => {
+  try {
+    const adminId = req.payload.userId;
+    const { skip, limit } = req.body;
+    await getAdminById(adminId);
+    const users = await retrieveUsers(skip, limit, true);
+    return res.status(200).json(users);
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json("Internal server error");
+    }
+  }
+};
+
 const authController = {
   login,
   signup,
@@ -229,6 +245,7 @@ const authController = {
   editUser,
   getUsers,
   createAdmin,
+  getUnverifiedUsers,
 };
 
 export default authController;

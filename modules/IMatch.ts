@@ -1,5 +1,5 @@
 export default interface IMatch {
-  id: Number;
+  _id: string;
   homeTeam: String;
   awayTeam: String;
   venue: String;

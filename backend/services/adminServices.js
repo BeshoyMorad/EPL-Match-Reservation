@@ -37,14 +37,23 @@ export async function createNewAdmin(adminDetails) {
   return newAdmin;
 }
 
-export async function retrieveUsers(skip, limit) {
+export async function retrieveUsers(skip, limit, unverified = false) {
   skip = parseInt(skip) || 0;
   limit = parseInt(limit) || 10;
-  const users = await User.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .exec();
+  let users;
+  if (unverified) {
+    users = await User.find({ approved: false })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+  } else {
+    users = await User.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+  }
   return users;
 }
 

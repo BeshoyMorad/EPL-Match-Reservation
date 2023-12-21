@@ -68,6 +68,14 @@ authRouter.get(
   authController.getUsers
 );
 
+authRouter.get(
+  "/unverified-users",
+  verifyAuthToken,
+  getUsersValidator,
+  validateRequestSchema,
+  authController.getUnverifiedUsers
+);
+
 authRouter.get("/user", verifyAuthToken, authController.getUser);
 
 authRouter.get("/admin", verifyAuthToken, authController.getAdmin);
