@@ -1,6 +1,6 @@
 export default interface Profile {
   email: string;
-  userName: string;
+  username: string;
   role: string;
   firstName: string;
   lastName: string;

@@ -13,14 +13,28 @@ import { useFormik } from "formik";
 import cities from "@/Database/City";
 import { optionsGender, optionsRole } from "@/Database/profile";
 import ResetPassword from "./resetPassword";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { userRequest } from "@/services/instance";
 import Profile from "@/modules/IProfile";
 import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
+  const router = useRouter();
+
   const [open, setOpen] = useState(false);
   const [cookies] = useCookies(["isAdmin"]);
+  const [profile, setProfile] = useState({
+    username: "",
+    role: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    birthDate: new Date("2001-09-19"),
+    gender: "",
+    city: "",
+    email: "",
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -34,29 +48,28 @@ export default function Profile() {
       userRequest
         .get("/user")
         .then((response) => {
-          console.log(response.data);
+          setProfile((prevProfile) => ({
+            ...prevProfile,
+            address: response.data.address,
+            username: response.data.username,
+            birthDate: response.data.birthDate,
+            gender: response.data.gender,
+            city: response.data.city,
+            lastName: response.data.lastName,
+            firstName: response.data.firstName,
+            email: response.data.email,
+            role: response.data.role,
+          }));
         })
         .catch((error) => {});
     } else {
-      userRequest
-        .get("/admin")
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {});
+      router.push("/admin");
     }
-  }, [cookies.isAdmin]);
-  let profile: Profile = {
-    userName: "Eslammm",
-    role: "Manager",
-    firstName: "Eslam",
-    lastName: "Ashraf",
-    address: "5 Cairo",
-    birthDate: new Date("2001-09-19"),
-    gender: "Male",
-    city: "Giza",
-    email: "eslam@koko.com",
-  };
+  }, [cookies.isAdmin, router]);
+  useEffect(() => {
+    formik.setValues(profile); // Update Formik values when profile changes
+  }, [profile]);
+  console.log(profile);
   const formik = useFormik({
     initialValues: profile,
     validationSchema: profileSchema,
@@ -114,12 +127,12 @@ export default function Profile() {
               disabled
               fullWidth
               label="User Name"
-              id="userName"
-              name="userName"
-              value={formik.values.userName}
+              id="username"
+              name="username"
+              value={formik.values.username}
               onChange={formik.handleChange}
-              error={formik.touched.userName && Boolean(formik.errors.userName)}
-              helperText={formik.touched.userName && formik.errors.userName}
+              error={formik.touched.username && Boolean(formik.errors.username)}
+              helperText={formik.touched.username && formik.errors.username}
             />
             <TextField
               disabled
@@ -177,7 +190,7 @@ export default function Profile() {
                 error={
                   formik.touched.birthDate && Boolean(formik.errors.birthDate)
                 }
-                helperText={formik.touched.birthDate && formik.errors.birthDate}
+                // helperText={formik.touched.birthDate && formik.errors.birthDate}
               />
             </div>
             <TextField
