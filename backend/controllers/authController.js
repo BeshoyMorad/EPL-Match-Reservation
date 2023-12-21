@@ -36,7 +36,7 @@ const login = async (req, res) => {
     });
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -79,7 +79,7 @@ const signup = async (req, res) => {
     });
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -96,7 +96,7 @@ const approveUser = async (req, res) => {
     return res.status(200).json("User approved successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -112,7 +112,7 @@ const removeUser = async (req, res) => {
     return res.status(204).json("User removed successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -129,7 +129,7 @@ const resetPassword = async (req, res) => {
     return res.status(200).json("Password updated successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -143,7 +143,7 @@ const getUser = async (req, res) => {
     return res.status(200).json(user);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -157,7 +157,7 @@ const getAdmin = async (req, res) => {
     return res.status(200).json(admin);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -180,7 +180,7 @@ const createAdmin = async (req, res) => {
     return res.status(200).json("Admin created successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -195,7 +195,7 @@ const editUser = async (req, res) => {
     return res.status(200).json("User updated successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -210,7 +210,7 @@ const getUsers = async (req, res) => {
     return res.status(200).json(users);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -225,7 +225,7 @@ const getUnverifiedUsers = async (req, res) => {
     return res.status(200).json(users);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }

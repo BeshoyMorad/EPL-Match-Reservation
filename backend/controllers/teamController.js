@@ -6,7 +6,7 @@ const getTeams = async (req, res) => {
     return res.status(200).json(teams);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
