@@ -13,21 +13,28 @@ import { useFormik } from "formik";
 import cities from "@/Database/City";
 import { optionsGender, optionsRole } from "@/Database/profile";
 import ResetPassword from "./resetPassword";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { userRequest } from "@/services/instance";
+import Profile from "@/modules/IProfile";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
-interface Profile {
-  email: string;
-  userName: string;
-  role: string;
-  firstName: string;
-  lastName: string;
-  address: string | null;
-  birthDate: Date | null;
-  gender: string;
-  city: string;
-}
 export default function Profile() {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [cookies] = useCookies(["isAdmin"]);
+  const [profile, setProfile] = useState({
+    username: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    birthDate: new Date("2001-09-19"),
+    gender: "",
+    city: "",
+    email: "",
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -36,23 +43,54 @@ export default function Profile() {
   const handleClose = () => {
     setOpen(false);
   };
-  let profile: Profile = {
-    userName: "Eslammm",
-    role: "Manager",
-    firstName: "Eslam",
-    lastName: "Ashraf",
-    address: "5 Cairo",
-    birthDate: new Date("2001-09-19"),
-    gender: "Male",
-    city: "Giza",
-    email: "eslam@koko.com",
-  };
+  useEffect(() => {
+    if (!cookies.isAdmin) {
+      userRequest
+        .get("/user")
+        .then((response) => {
+          const serverProfile = response.data;
+          serverProfile.birthDate = new Date(response.data.birthDate);
+          setProfile((prevProfile) => ({
+            ...prevProfile,
+            ...serverProfile,
+            address: response.data.address,
+            username: response.data.username,
+            birthDate: response.data.birthDate,
+            gender: response.data.gender,
+            city: response.data.city,
+            lastName: response.data.lastName,
+            firstName: response.data.firstName,
+            email: response.data.email,
+          }));
+        })
+        .catch(() => {
+          router.push("/signin");
+        });
+    } else {
+      router.push("/admin");
+    }
+  }, [cookies.isAdmin, router]);
+  useEffect(() => {
+    formik.setValues(profile); // Update Formik values when profile changes
+  }, [profile]);
+  // console.log(profile);
   const formik = useFormik({
     initialValues: profile,
     validationSchema: profileSchema,
     async onSubmit(values) {
-      console.log(values);
-      // Add your asynchronous logic here (e.g., API calls, etc.)
+      const data = values;
+      userRequest
+        .put("/user", data)
+        .then((response) => {
+          console.log(response);
+          setError(false);
+          setErrorMessage("Successfully Updated");
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(true);
+          setErrorMessage(error.response.data.error[0]);
+        });
     },
   });
   let formattedBirthDate = "";
@@ -93,6 +131,7 @@ export default function Profile() {
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
           borderRadius: "25px",
           padding: "6px 18px",
+          mx: "auto",
         }}
       >
         <h1 className="text-center text-3xl text-[var(--main-color)] font-bold mt-2 ">
@@ -104,12 +143,12 @@ export default function Profile() {
               disabled
               fullWidth
               label="User Name"
-              id="userName"
-              name="userName"
-              value={formik.values.userName}
+              id="username"
+              name="username"
+              value={formik.values.username}
               onChange={formik.handleChange}
-              error={formik.touched.userName && Boolean(formik.errors.userName)}
-              helperText={formik.touched.userName && formik.errors.userName}
+              error={formik.touched.username && Boolean(formik.errors.username)}
+              helperText={formik.touched.username && formik.errors.username}
             />
             <TextField
               disabled
@@ -167,7 +206,7 @@ export default function Profile() {
                 error={
                   formik.touched.birthDate && Boolean(formik.errors.birthDate)
                 }
-                helperText={formik.touched.birthDate && formik.errors.birthDate}
+                // helperText={formik.touched.birthDate && formik.errors.birthDate}
               />
             </div>
             <TextField
@@ -221,24 +260,22 @@ export default function Profile() {
               helperText={formik.touched.address && formik.errors.address}
             />
           </div>
-          <TextField
-            select
-            fullWidth
-            sx={{ mt: 3, width: "49%" }}
-            label="Role"
-            id="role"
-            name="role"
-            value={formik.values.role}
-            onChange={formik.handleChange}
-            error={formik.touched.role && Boolean(formik.errors.role)}
-            helperText={formik.touched.role && formik.errors.role}
-          >
-            {optionsRole.map((option) => (
-              <MenuItem key={option.id} value={option.name}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
+          {error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "red" }}
+            >
+              {errorMessage}
+            </div>
+          )}
+          {!error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "green" }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <div className="flex gap-2  items-center justify-end py-3">
             <Button
               sx={{
