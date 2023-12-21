@@ -34,7 +34,7 @@ const createMatch = async (req, res) => {
     return res.status(201).json("Match created successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -56,7 +56,7 @@ const editMatch = async (req, res) => {
     return res.status(200).json("Match updated successfully");
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -70,7 +70,7 @@ const getMatch = async (req, res) => {
     return res.status(200).json(match);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -83,7 +83,7 @@ const getMatches = async (req, res) => {
     return res.status(200).json(matches);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -97,7 +97,7 @@ const getVacantSeats = async (req, res) => {
     return res.status(200).json(vacantSeats);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
@@ -111,7 +111,7 @@ const getReservedSeats = async (req, res) => {
     return res.status(200).json(reservedSeats);
   } catch (error) {
     if (error.statusCode) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ error: [error.message] });
     } else {
       res.status(500).json("Internal server error");
     }
