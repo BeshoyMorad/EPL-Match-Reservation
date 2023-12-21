@@ -14,4 +14,12 @@ stadiumRouter.post(
   stadiumController.createStadium
 );
 
+stadiumRouter.get("/stadium", verifyAuthToken, stadiumController.getStadiums);
+
+stadiumRouter.get(
+  "/stadium/:stadiumId",
+  verifyAuthToken,
+  stadiumController.getStadium
+);
+
 export default stadiumRouter;
