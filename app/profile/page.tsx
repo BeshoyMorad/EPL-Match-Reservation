@@ -15,10 +15,12 @@ import { optionsGender, optionsRole } from "@/Database/profile";
 import ResetPassword from "./resetPassword";
 import { useEffect, useState } from "react";
 import { userRequest } from "@/services/instance";
-import Profile from '@/modules/IProfile'
+import Profile from "@/modules/IProfile";
+import { useCookies } from "react-cookie";
 
 export default function Profile() {
   const [open, setOpen] = useState(false);
+  const [cookies] = useCookies(["isAdmin"]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -28,10 +30,22 @@ export default function Profile() {
     setOpen(false);
   };
   useEffect(() => {
-    userRequest.get("/user").then((response) => {
-      console.log(response.data);
-    }).catch((error) => { });
-  },[])
+    if (!cookies.isAdmin) {
+      userRequest
+        .get("/user")
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {});
+    } else {
+      userRequest
+        .get("/admin")
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {});
+    }
+  }, [cookies.isAdmin]);
   let profile: Profile = {
     userName: "Eslammm",
     role: "Manager",
