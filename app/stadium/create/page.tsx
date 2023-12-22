@@ -1,33 +1,45 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  TextField,
-  MenuItem,
-  InputLabel,
-  Button,
-} from "@mui/material";
+import { Box, Container, TextField, Button } from "@mui/material";
 import { stadiumSchema } from "@/schemas/Stadium";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { userRequest } from "@/services/instance";
+import { useRouter } from "next/navigation";
+import {useState} from "react"
+import Stadium from "@/modules/IStaduim";
 
-interface Stadium {
-  name: string;
-  rows: number | null;
-  cols: number | null;
-}
+
 export default function CreateStadium() {
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+
   let stadium: Stadium = {
-    name: "",
-    rows: null,
-    cols: null,
+    stadiumName: "",
+    numberOfRows: undefined,
+    seatsPerRow: undefined,
   };
   const formik = useFormik({
     initialValues: stadium,
     validationSchema: stadiumSchema,
     async onSubmit(values) {
       console.log(values);
+      userRequest
+        .post("/stadium", values)
+        .then((response) => {
+          console.log("Success:", response);
+          router.push("/match/create");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          if (error.response.status === 401) {
+            router.push("/signin");
+          }
+          else {
+            setError(true);
+            setErrorMessage(error.response.data.error);
+          }
+        });
     },
   });
 
@@ -60,7 +72,7 @@ export default function CreateStadium() {
           width: "100%",
           maxWidth: "500px",
           background: "white",
-          marginTop: "-450px",
+          margin: "-450px auto  0px",
           position: "relative",
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
           borderRadius: "25px",
@@ -74,41 +86,62 @@ export default function CreateStadium() {
           <div className="flex justify-center items-start gap-5 mt-3">
             <TextField
               fullWidth
-              label="Name Stadium"
-              id="name"
-              name="name"
-              value={formik.values.name}
+              label="Stadium Name"
+              id="stadiumName"
+              name="stadiumName"
+              value={formik.values.stadiumName}
               onChange={formik.handleChange}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+              error={
+                formik.touched.stadiumName && Boolean(formik.errors.stadiumName)
+              }
+              helperText={
+                formik.touched.stadiumName && formik.errors.stadiumName
+              }
             />
           </div>
           <div className="flex justify-center items-start gap-5 mt-3">
             <TextField
               type="number"
               fullWidth
-              label="Rows"
-              id="rows"
-              name="rows"
-              value={formik.values.rows}
+              label="Number Of Rows"
+              id="numberOfRows"
+              name="numberOfRows"
+              value={formik.values.numberOfRows}
               onChange={formik.handleChange}
-              error={formik.touched.rows && Boolean(formik.errors.rows)}
-              helperText={formik.touched.rows && formik.errors.rows}
+              error={
+                formik.touched.numberOfRows &&
+                Boolean(formik.errors.numberOfRows)
+              }
+              helperText={
+                formik.touched.numberOfRows && formik.errors.numberOfRows
+              }
             />
           </div>
           <div className="flex justify-center items-start gap-5 mt-3">
             <TextField
               type="number"
               fullWidth
-              label="Columns"
-              id="cols"
-              name="cols"
-              value={formik.values.cols}
+              label="Seats Per Row"
+              id="seatsPerRow"
+              name="seatsPerRow"
+              value={formik.values.seatsPerRow}
               onChange={formik.handleChange}
-              error={formik.touched.cols && Boolean(formik.errors.cols)}
-              helperText={formik.touched.cols && formik.errors.cols}
+              error={
+                formik.touched.seatsPerRow && Boolean(formik.errors.seatsPerRow)
+              }
+              helperText={
+                formik.touched.seatsPerRow && formik.errors.seatsPerRow
+              }
             />
           </div>
+          {error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "red" }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <div className="flex gap-2  items-center justify-end py-3">
             <Button
               type="submit"
