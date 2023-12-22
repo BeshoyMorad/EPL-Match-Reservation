@@ -3,7 +3,6 @@ import mongoose, { Schema } from "mongoose";
 const reservationSchema = mongoose.Schema({
   ticketNumber: {
     type: Number,
-    required: true,
   },
   reservationDate: {
     type: Date,

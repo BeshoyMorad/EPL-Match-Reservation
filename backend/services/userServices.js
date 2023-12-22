@@ -181,3 +181,7 @@ export async function addUserMatch(user, matchId) {
   user.matches.push({ matchId: matchId });
   await user.save();
 }
+
+export async function getUserReservation(user){
+  const reservations = user.reservation
+}
