@@ -1,3 +1,4 @@
+"use client";
 import MatchForm from "@/components/MatchForm";
 import { Container, Paper } from "@mui/material";
 import { useRouter } from "next/navigation";
