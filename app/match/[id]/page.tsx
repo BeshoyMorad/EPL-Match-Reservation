@@ -3,9 +3,12 @@ import { Container } from "@mui/material";
 import MatchSection from "@/components/MatchSection";
 import SportsIcon from "@mui/icons-material/Sports";
 import ChairIcon from "@mui/icons-material/Chair";
+import { useEffect, useState } from "react";
+import {userRequest} from "@/services/instance";
+import IMatch from "@/modules/IMatch";
 
 export default function MatchDetails({ params }: { params: { id: string } }) {
-  const match = {
+  const [match, setMatch] = useState<IMatch>({
     _id: "1",
     homeTeam: "Team 1",
     awayTeam: "Team 2",
@@ -14,14 +17,55 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
     mainReferee: "Eslam",
     linesman1: "Linesman 1",
     linesman2: "Linesman 2",
-
-  };
+    homeTeamId: {
+      imagePath: "",
+    },
+    awayTeamId: {
+      imagePath: "",
+    },
+    venueId: {
+      name: "",
+    }
+  });
+  
   const board = [
     ["R", "F", "F", "F", "F"],
     ["R", "R", "R", "F", "F"],
     ["R", "F", "R", "F", "F"],
   ];
-  console.log(params.id);
+  useEffect(() => {
+    userRequest
+      .get(`/match/${params.id}`)
+      .then((response) => {
+        console.log(response);
+        setMatch((prevProfile) => ({
+          ...prevProfile,
+          _id: response.data._id,
+          homeTeam: response.data.homeTeam,
+          awayTeam: response.data.awayTeam,
+          homeTeamId: {
+            ...prevProfile.homeTeamId,
+            imagePath: response.data.homeTeamId.imagePath,
+          },
+          awayTeamId: {
+            ...prevProfile.awayTeamId,
+            imagePath: response.data.awayTeamId.imagePath,
+          },
+          venueId: {
+            ...prevProfile.venueId,
+            name: response.data.venueId.name,
+          },
+          venue: response.data.venueId.name,
+          dateAndTime: response.data.dateAndTime,
+          mainReferee: response.data.mainReferee,
+          linesman1: response.data.firstLinesman,
+          linesman2: response.data.secondLinesman,
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   return (
     <Container
       sx={{

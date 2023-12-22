@@ -7,4 +7,13 @@ export default interface IMatch {
   mainReferee: String;
   linesman1: String;
   linesman2: String;
+  homeTeamId: {
+    imagePath: "";
+  };
+  awayTeamId: {
+    imagePath: "";
+  };
+  venueId: {
+    name: "";
+  };
 }

@@ -47,6 +47,7 @@ export default function Match({ match }: { match: IMatch }) {
               backgroundColor: "#32d360",
             },
           }}
+          href={`/match/reserve/${match._id}`}
         >
           <ConfirmationNumberOutlinedIcon />
           Book ticket
