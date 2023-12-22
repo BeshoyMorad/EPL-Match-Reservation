@@ -15,13 +15,13 @@ import IMatch from "@/modules/IMatch";
 export default function ReserveMatch({ params }: { params: { id: string } }) {
   const [match, setMatch] = useState<IMatch>({
     _id: "1",
-    homeTeam: "Team 1",
-    awayTeam: "Team 2",
-    venue: "Venue",
+    homeTeam: "",
+    awayTeam: "",
+    venue: "",
     dateAndTime: new Date(),
-    mainReferee: "Eslam",
-    linesman1: "Linesman 1",
-    linesman2: "Linesman 2",
+    mainReferee: "",
+    linesman1: "",
+    linesman2: "",
     homeTeamId: {
       imagePath: "",
     },
@@ -36,7 +36,10 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
     },
   });
   const [initialBoard, setInitialBoard] = useState<string[][]>([]);
-
+  const [board, setBoard] = useState(initialBoard);
+  const [selectedSeats, setSelectedSeats] = useState<
+    { row: number; col: number }[]
+  >([]);
 
   useEffect(() => {
     userRequest
@@ -46,8 +49,8 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
         setMatch((prevProfile) => ({
           ...prevProfile,
           _id: response.data._id,
-          homeTeam: response.data.homeTeam,
-          awayTeam: response.data.awayTeam,
+          homeTeam: response.data.homeTeamId?.name,
+          awayTeam: response.data.awayTeamId?.name,
           homeTeamId: {
             ...prevProfile.homeTeamId,
             imagePath: response.data.homeTeamId.imagePath,
@@ -81,10 +84,26 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
         console.log(error);
       });
   }, []);
-  const [board, setBoard] = useState(initialBoard);
-  const [selectedSeats, setSelectedSeats] = useState<
-    { row: number; col: number }[]
-  >([]);
+  useEffect(() => {
+    userRequest
+      .get(`/reserved-seats/${match._id}`)
+      .then((response) => {
+        console.log(response);
+        const reservedSeatIndices = response.data;
+        const seatsPerRow = match.venueId.seatsPerRow;
+        const updatedBoard = initialBoard.map((row, i) =>
+          row.map((cell, j) => {
+            const seatIndex = i * seatsPerRow + j;
+            return reservedSeatIndices.includes(seatIndex) ? "R" : cell;
+          })
+        );
+        setInitialBoard(updatedBoard);
+        setBoard(updatedBoard);
+
+      })
+      .catch((error) => {});
+  }, [match]);
+
 
   const handleSeatClick = (rowIndex: number, colIndex: number) => {
     const updatedBoard = [...board];
@@ -139,8 +158,8 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
           width: "100%",
         }}
       >
-        <h1 className="text-center text-3xl text-[var(--main-color)] font-bold mt-5">
-          Match Details
+        <h1 className=" text-3xl text-[var(--main-color)] font-bold mt-5">
+          Match Reservation
         </h1>
         <MatchSection match={match}></MatchSection>
         <div className="flex gap-5 justify-center items-center  border-t-2 border-t-slate-200 py-3">
@@ -234,7 +253,17 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
           <div className="book-ticket mt-5">
             <Button
               type="submit"
-              className="flex items-center gap-2 bg-[var(--main-color)] hover:bg-[#32d360] text-white m-auto"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                backgroundColor: "var(--main-color)",
+                "&:hover": {
+                  backgroundColor: "#32d360",
+                },
+                color: "white",
+                margin: "auto",
+              }}
             >
               <ConfirmationNumberOutlinedIcon />
               Book ticket

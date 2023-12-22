@@ -44,8 +44,8 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
         setMatch((prevProfile) => ({
           ...prevProfile,
           _id: response.data._id,
-          homeTeam: response.data.homeTeam,
-          awayTeam: response.data.awayTeam,
+          homeTeam: response.data.homeTeamId?.name,
+          awayTeam: response.data.awayTeamId?.name,
           homeTeamId: {
             ...prevProfile.homeTeamId,
             imagePath: response.data.homeTeamId.imagePath,
@@ -114,7 +114,7 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
           width: "100%",
         }}
       >
-        <h1 className="text-center text-3xl text-[var(--main-color)] font-bold mt-5">
+        <h1 className="text-3xl text-[var(--main-color)] font-bold mt-5">
           Match Details
         </h1>
         <MatchSection match={match}></MatchSection>
