@@ -17,7 +17,6 @@ import {
   computeReservedSeats,
 } from "./services/matchServices.js";
 import reservationServices from "./services/reservationServices.js";
-import errorHandlingUtils from "./utils/errorHandlingUtils.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -112,7 +111,7 @@ app.use(
 );
 app.use(mainRouter);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Started on port ${port}`);
 });
 

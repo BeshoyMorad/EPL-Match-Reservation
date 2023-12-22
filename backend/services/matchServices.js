@@ -83,8 +83,8 @@ export async function retrieveMatches() {
 export async function computeReservedSeats(matchId) {
   const match = await getMatchById(matchId);
   const reservations = match.reservations;
-  const reservedSeats = reservations.map((reservation) =>
-    reservation.seatIndex
+  const reservedSeats = reservations.map(
+    (reservation) => reservation.seatIndex
   );
   return reservedSeats;
 }
@@ -93,11 +93,11 @@ export async function computeVacantSeats(matchId) {
   const match = await getMatchById(matchId);
   const venue = match.venueId;
   const totalCapacity = venue.numberOfRows * venue.seatsPerRow;
-  const reservedSeats = reservations.map((reservation) =>
-    reservation.seatIndex
+  const reservedSeats = reservations.map(
+    (reservation) => reservation.seatIndex
   );
   const vacantSeats = [];
-  for (let i = 1; i <= totalCapacity; i++) {
+  for (let i = 0; i < totalCapacity; i++) {
     if (!reservedSeats.includes(i)) {
       vacantSeats.push(i);
     }
