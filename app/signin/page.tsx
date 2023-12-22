@@ -9,15 +9,11 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { publicRequest } from "@/services/instance";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
+import UserLogin from "@/modules/ILogin";
 
-interface UserLogin {
-  username: string;
-  password: string;
-}
 export default function SignIn() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
 
   const router = useRouter();
   const [cookies, setCookies] = useCookies([
@@ -102,10 +98,10 @@ export default function SignIn() {
           helperText={formik.touched.username && formik.errors.username}
         />
         <TextField
-          className="mt-2"
+          sx={{ mt: 2 }}
           fullWidth
           id="outlined-adornment-password"
-          type={showPassword ? "text" : "password"}
+          type="password"
           label="Password"
           name="password"
           value={formik.values.password}

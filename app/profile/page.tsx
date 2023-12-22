@@ -20,13 +20,13 @@ import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 
 export default function Profile() {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
-
   const [open, setOpen] = useState(false);
   const [cookies] = useCookies(["isAdmin"]);
   const [profile, setProfile] = useState({
     username: "",
-    role: "",
     firstName: "",
     lastName: "",
     address: "",
@@ -48,8 +48,11 @@ export default function Profile() {
       userRequest
         .get("/user")
         .then((response) => {
+          const serverProfile = response.data;
+          serverProfile.birthDate = new Date(response.data.birthDate);
           setProfile((prevProfile) => ({
             ...prevProfile,
+            ...serverProfile,
             address: response.data.address,
             username: response.data.username,
             birthDate: response.data.birthDate,
@@ -58,10 +61,11 @@ export default function Profile() {
             lastName: response.data.lastName,
             firstName: response.data.firstName,
             email: response.data.email,
-            role: response.data.role,
           }));
         })
-        .catch((error) => {});
+        .catch(() => {
+          router.push("/signin");
+        });
     } else {
       router.push("/admin");
     }
@@ -69,13 +73,24 @@ export default function Profile() {
   useEffect(() => {
     formik.setValues(profile); // Update Formik values when profile changes
   }, [profile]);
-  console.log(profile);
+  // console.log(profile);
   const formik = useFormik({
     initialValues: profile,
     validationSchema: profileSchema,
     async onSubmit(values) {
-      console.log(values);
-      // Add your asynchronous logic here (e.g., API calls, etc.)
+      const data = values;
+      userRequest
+        .put("/user", data)
+        .then((response) => {
+          console.log(response);
+          setError(false);
+          setErrorMessage("Successfully Updated");
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(true);
+          setErrorMessage(error.response.data.error[0]);
+        });
     },
   });
   let formattedBirthDate = "";
@@ -116,6 +131,7 @@ export default function Profile() {
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
           borderRadius: "25px",
           padding: "6px 18px",
+          mx: "auto",
         }}
       >
         <h1 className="text-center text-3xl text-[var(--main-color)] font-bold mt-2 ">
@@ -244,24 +260,22 @@ export default function Profile() {
               helperText={formik.touched.address && formik.errors.address}
             />
           </div>
-          <TextField
-            select
-            fullWidth
-            sx={{ mt: 3, width: "49%" }}
-            label="Role"
-            id="role"
-            name="role"
-            value={formik.values.role}
-            onChange={formik.handleChange}
-            error={formik.touched.role && Boolean(formik.errors.role)}
-            helperText={formik.touched.role && formik.errors.role}
-          >
-            {optionsRole.map((option) => (
-              <MenuItem key={option.id} value={option.name}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
+          {error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "red" }}
+            >
+              {errorMessage}
+            </div>
+          )}
+          {!error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "green" }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <div className="flex gap-2  items-center justify-end py-3">
             <Button
               sx={{

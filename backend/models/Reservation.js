@@ -19,18 +19,10 @@ const reservationSchema = mongoose.Schema({
     ref: "Match",
     required: true,
   },
-  seats: [
-    {
-      seatNumber: {
-        type: Number,
-        required: true,
-      },
-      seatRow: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
+  seatIndex: {
+    type: Number,
+    required: true,
+  },
 });
 
 const Reservation = mongoose.model("Reservation", reservationSchema);
