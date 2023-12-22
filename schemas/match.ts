@@ -1,9 +1,9 @@
 import * as yup from "yup";
 
 export const matchSchema = yup.object().shape({
-  homeTeam: yup.number().required("Home team is required"),
+  homeTeam: yup.string().required("Home team is required"),
   awayTeam: yup
-    .number()
+    .string()
     .required("Away team is required")
     .notOneOf(
       [yup.ref("homeTeam")],

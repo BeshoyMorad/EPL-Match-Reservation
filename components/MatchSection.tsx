@@ -1,21 +1,20 @@
-import React from 'react'
-import { Button, Paper, IconButton, Icon } from "@mui/material";
+import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import moment from "moment";
 import StadiumOutlinedIcon from "@mui/icons-material/StadiumOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import IMatch from "@/modules/IMatch";
 
-
 const MatchSection = ({ match }: { match: IMatch }) => {
+  console.log(match);
+
   return (
     <>
       <div className="teams flex gap-5 items-center justify-center py-3">
         <div className="flex items-center gap-2">
           <div className="text-xl font-semibold">{match.homeTeam}</div>
           <Image
-            src="/images/Al Ittihad Alexandria Club.png"
+            src={match.homeTeamId?.imagePath}
             width={38}
             height={38}
             alt="team"
@@ -28,7 +27,7 @@ const MatchSection = ({ match }: { match: IMatch }) => {
 
         <div className="flex items-center gap-2">
           <Image
-            src="/images/Al Ahly SC.png"
+            src={match.awayTeamId?.imagePath}
             width={38}
             height={38}
             alt="team"
@@ -41,7 +40,7 @@ const MatchSection = ({ match }: { match: IMatch }) => {
         <div className="stadium flex items-center gap-2">
           <StadiumOutlinedIcon sx={{ fontSize: "3rem" }} />
 
-          <h4 className="text-lg">{match.venue}</h4>
+          <h4 className="text-lg">{match.venueId?.name}</h4>
         </div>
 
         <div className="date flex items-center">
@@ -53,4 +52,4 @@ const MatchSection = ({ match }: { match: IMatch }) => {
   );
 };
 
-export default MatchSection
+export default MatchSection;
