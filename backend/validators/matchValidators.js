@@ -17,7 +17,7 @@ export const createMatchValidator = [
     .not()
     .isEmpty()
     .withMessage("Date and Time must be filled")
-    .isDate()
+    .isISO8601({ strict: true, toDate: "date" })
     .withMessage("Invalid date format"),
   body("mainReferee")
     .not()
@@ -34,7 +34,10 @@ export const createMatchValidator = [
 ];
 
 export const editMatchValidator = [
-  body("dateAndTime").optional().isDate().withMessage("Invalid date format"),
+  body("dateAndTime")
+    .optional()
+    .isISO8601({ strict: true, toDate: "date" })
+    .withMessage("Invalid date format"),
   body("mainReferee")
     .optional()
     .isAlpha("en-US", { ignore: "s" })

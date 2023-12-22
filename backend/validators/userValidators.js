@@ -62,7 +62,7 @@ export const signupValidator = [
     .not()
     .isEmpty()
     .withMessage("City can't be empty")
-    .isAlpha("en-US", { ignore: "s" })
+    .isString()
     .withMessage("City must consist of letters only"),
   body("birthDate")
     .not()

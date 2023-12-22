@@ -50,8 +50,8 @@ export async function getMatchById(matchId) {
   const match = await Match.findById(matchId)
     .populate("homeTeamId")
     .populate("awayTeamId")
-    .populate("venueId")
-    .populate("reservations");
+    .populate("venueId");
+  // .populate("reservations");
   if (!match) {
     const error = new Error("Match not found");
     error.statusCode = 400;

@@ -7,12 +7,14 @@ export default function SignOut() {
     "isAdmin",
     "token",
     "username",
+    "role",
   ]);
   const navigate = useRouter();
 
   removeCookie("isAdmin", { path: "/" });
   removeCookie("token", { path: "/" });
   removeCookie("username", { path: "/" });
+  removeCookie("role", { path: "/" });
 
   navigate.push("/signin");
 

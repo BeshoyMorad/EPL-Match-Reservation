@@ -3,16 +3,18 @@
 import { matchSchema } from "@/schemas/match";
 import { Button, MenuItem, TextField } from "@mui/material";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs, { Dayjs } from "dayjs";
+import { userRequest } from "@/services/instance";
+import { useRouter } from "next/navigation";
 
 interface IintialState {
-  homeTeam: Number | string;
-  awayTeam: Number | string;
+  homeTeam: string;
+  awayTeam: string;
   stadium: String | null;
   date: Date | Dayjs | null;
   mainReferee: String | null;
@@ -20,25 +22,17 @@ interface IintialState {
   linesman2: String | null;
 }
 
-export default function MatchForm({ id }: { id: Number | null }) {
-  // Fetch teams from the backend
-  const teams = [
-    {
-      id: 1,
-      name: "Ahly",
-    },
-    {
-      id: 2,
-      name: "Zamalek",
-    },
-    {
-      id: 3,
-      name: "Pyramids",
-    },
-  ];
-  const [waiting, setWaiting] = useState(false);
+const getMatchById = async (id: string) => {
+  const response = await userRequest.get(`/match/${id}`);
 
-  let intialState: IintialState = {
+  return response.data;
+};
+
+export default function MatchForm({ id }: { id: string | null }) {
+  const [teams, setTeams] = useState<ITeam[]>([]);
+  const [stadiums, setStadiums] = useState<IStadium[]>([]);
+  const [waiting, setWaiting] = useState(false);
+  const [intialState, setIntialState] = useState<IintialState>({
     homeTeam: "",
     awayTeam: "",
     stadium: "",
@@ -46,20 +40,46 @@ export default function MatchForm({ id }: { id: Number | null }) {
     mainReferee: "",
     linesman1: "",
     linesman2: "",
-  };
+  });
+  const navigate = useRouter();
 
-  if (id) {
-    // Update => fetch the match and update intialState
-    intialState = {
-      homeTeam: 1,
-      awayTeam: 2,
-      stadium: "Venue",
-      date: dayjs(new Date()),
-      mainReferee: "Main Referee",
-      linesman1: "Linesman 1",
-      linesman2: "Linesman 2",
+  useEffect(() => {
+    const fetchTeams = async () => {
+      const response = await userRequest.get("/teams");
+
+      setTeams(response.data);
     };
-  }
+
+    const fetchStadiums = async () => {
+      const response = await userRequest.get("/stadium");
+
+      setStadiums(response.data.stadiums);
+    };
+
+    fetchTeams();
+    fetchStadiums();
+
+    if (id) {
+      const getMatch = async (id: string) => {
+        const state = await getMatchById(id);
+        setIntialState({
+          homeTeam: state.homeTeamId._id,
+          awayTeam: state.awayTeamId._id,
+          stadium: state.venueId._id,
+          date: dayjs(state.dateAndTime),
+          mainReferee: state.mainReferee,
+          linesman1: state.firstLinesman,
+          linesman2: state.secondLinesman,
+        });
+      };
+
+      getMatch(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    formik.setValues(intialState);
+  }, [intialState]);
 
   const formik = useFormik({
     initialValues: intialState,
@@ -69,10 +89,28 @@ export default function MatchForm({ id }: { id: Number | null }) {
 
       if (id) {
         // Update
-        console.log(values);
+        await userRequest.put(`/match/${id}`, {
+          homeTeamId: values.homeTeam,
+          awayTeamId: values.awayTeam,
+          venueId: values.stadium,
+          dateAndTime: values.date,
+          mainReferee: values.mainReferee,
+          firstLinesman: values.linesman1,
+          secondLinesman: values.linesman2,
+        });
+        navigate.push("/");
       } else {
         // Create
-        console.log(values);
+        await userRequest.post("/match", {
+          homeTeamId: values.homeTeam,
+          awayTeamId: values.awayTeam,
+          venueId: values.stadium,
+          dateAndTime: values.date,
+          mainReferee: values.mainReferee,
+          firstLinesman: values.linesman1,
+          secondLinesman: values.linesman2,
+        });
+        navigate.push("/");
       }
 
       setWaiting(false);
@@ -94,7 +132,7 @@ export default function MatchForm({ id }: { id: Number | null }) {
         helperText={formik.touched.homeTeam && formik.errors.homeTeam}
       >
         {teams.map((team) => (
-          <MenuItem key={team.id} value={team.id}>
+          <MenuItem key={team._id} value={team._id}>
             {team.name}
           </MenuItem>
         ))}
@@ -113,13 +151,14 @@ export default function MatchForm({ id }: { id: Number | null }) {
         helperText={formik.touched.awayTeam && formik.errors.awayTeam}
       >
         {teams.map((team) => (
-          <MenuItem key={team.id} value={team.id}>
+          <MenuItem key={team._id} value={team._id}>
             {team.name}
           </MenuItem>
         ))}
       </TextField>
 
       <TextField
+        select
         fullWidth
         sx={{ mt: 3 }}
         label="Stadium"
@@ -129,7 +168,13 @@ export default function MatchForm({ id }: { id: Number | null }) {
         onChange={formik.handleChange}
         error={formik.touched.stadium && Boolean(formik.errors.stadium)}
         helperText={formik.touched.stadium && formik.errors.stadium}
-      />
+      >
+        {stadiums.map((stadium) => (
+          <MenuItem key={stadium._id} value={stadium._id}>
+            {stadium.name}
+          </MenuItem>
+        ))}
+      </TextField>
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer sx={{ mt: 2 }} components={["DateTimePicker"]}>

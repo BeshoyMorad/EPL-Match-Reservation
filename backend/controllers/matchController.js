@@ -7,6 +7,7 @@ import {
   updateMatch,
   validateMatchDetails,
 } from "../services/matchServices.js";
+import { checkUserRole } from "../services/userServices.js";
 
 const createMatch = async (req, res) => {
   try {
@@ -36,6 +37,7 @@ const createMatch = async (req, res) => {
     if (error.statusCode) {
       res.status(error.statusCode).json({ error: [error.message] });
     } else {
+      console.log(error);
       res.status(500).json("Internal server error");
     }
   }
@@ -72,6 +74,7 @@ const getMatch = async (req, res) => {
     if (error.statusCode) {
       res.status(error.statusCode).json({ error: [error.message] });
     } else {
+      console.log(error);
       res.status(500).json("Internal server error");
     }
   }
