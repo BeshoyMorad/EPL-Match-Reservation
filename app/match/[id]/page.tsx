@@ -6,8 +6,11 @@ import ChairIcon from "@mui/icons-material/Chair";
 import { useEffect, useState } from "react";
 import { userRequest } from "@/services/instance";
 import IMatch from "@/modules/IMatch";
+import { useRouter } from "next/navigation";
 
 export default function MatchDetails({ params }: { params: { id: string } }) {
+  const router = useRouter();
+
   const [match, setMatch] = useState<IMatch>({
     _id: "1",
     homeTeam: "Team 1",
@@ -72,9 +75,28 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
         setInitialBoard(newInitialBoard);
       })
       .catch((error) => {
-        console.log(error);
+        router.push("/");
       });
   }, []);
+  useEffect(() => {
+    userRequest
+      .get(`/reserved-seats/${match._id}`)
+      .then((response) => {
+        console.log(response);
+        const reservedSeatIndices = response.data;
+        const seatsPerRow = match.venueId.seatsPerRow;
+        const updatedBoard = initialBoard.map((row, i) =>
+          row.map((cell, j) => {
+            const seatIndex = i * seatsPerRow + j;
+
+            return reservedSeatIndices.includes(seatIndex) ? "R" : cell;
+          })
+        );
+
+        setInitialBoard(updatedBoard);
+      })
+      .catch((error) => {});
+  }, [match]);
   return (
     <Container
       sx={{

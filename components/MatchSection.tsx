@@ -14,7 +14,7 @@ const MatchSection = ({ match }: { match: IMatch }) => {
         <div className="flex items-center gap-2">
           <div className="text-xl font-semibold">{match.homeTeam}</div>
           <Image
-            src={match.homeTeamId?.imagePath}
+            src={match.homeTeamId?.imagePath as string}
             width={38}
             height={38}
             alt="team"
@@ -27,7 +27,7 @@ const MatchSection = ({ match }: { match: IMatch }) => {
 
         <div className="flex items-center gap-2">
           <Image
-            src={match.awayTeamId?.imagePath}
+            src={match.awayTeamId?.imagePath as string}
             width={38}
             height={38}
             alt="team"
