@@ -3,15 +3,17 @@ import { Container, Button, TextField } from "@mui/material";
 import MatchSection from "@/components/MatchSection";
 import SportsIcon from "@mui/icons-material/Sports";
 import ChairIcon from "@mui/icons-material/Chair";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
 import IPin from "@/modules/IPin";
 import { pinSchema } from "@/schemas/pin";
 import { useFormik } from "formik";
+import { userRequest } from "@/services/instance";
+import IMatch from "@/modules/IMatch";
 
 export default function ReserveMatch({ params }: { params: { id: string } }) {
-  const match = {
+  const [match, setMatch] = useState<IMatch>({
     _id: "1",
     homeTeam: "Team 1",
     awayTeam: "Team 2",
@@ -20,13 +22,65 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
     mainReferee: "Eslam",
     linesman1: "Linesman 1",
     linesman2: "Linesman 2",
-  };
-  const initialBoard = [
-    ["R", "F", "F", "F", "F"],
-    ["R", "R", "R", "F", "F"],
-    ["R", "F", "R", "F", "F"],
-  ];
+    homeTeamId: {
+      imagePath: "",
+    },
+    awayTeamId: {
+      imagePath: "",
+    },
+    venueId: {
+      name: "",
+      numberOfRows: 0,
+      seatsPerRow: 0,
+      _id: "0",
+    },
+  });
+  const [initialBoard, setInitialBoard] = useState<string[][]>([]);
 
+
+  useEffect(() => {
+    userRequest
+      .get(`/match/${params.id}`)
+      .then((response) => {
+        console.log(response);
+        setMatch((prevProfile) => ({
+          ...prevProfile,
+          _id: response.data._id,
+          homeTeam: response.data.homeTeam,
+          awayTeam: response.data.awayTeam,
+          homeTeamId: {
+            ...prevProfile.homeTeamId,
+            imagePath: response.data.homeTeamId.imagePath,
+          },
+          awayTeamId: {
+            ...prevProfile.awayTeamId,
+            imagePath: response.data.awayTeamId.imagePath,
+          },
+          venueId: {
+            ...prevProfile.venueId,
+            name: response.data.venueId.name,
+            numberOfRows: response.data.venueId.numberOfRows,
+            seatsPerRow: response.data.venueId.seatsPerRow,
+            _id: response.data.venueId._id,
+          },
+          venue: response.data.venueId.name,
+          dateAndTime: response.data.dateAndTime,
+          mainReferee: response.data.mainReferee,
+          linesman1: response.data.firstLinesman,
+          linesman2: response.data.secondLinesman,
+        }));
+        const newInitialBoard = Array.from(
+          { length: response.data.venueId.numberOfRows },
+          () => Array(response.data.venueId.seatsPerRow).fill("F")
+        );
+
+        setInitialBoard(newInitialBoard);
+        setBoard(newInitialBoard);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   const [board, setBoard] = useState(initialBoard);
   const [selectedSeats, setSelectedSeats] = useState<
     { row: number; col: number }[]
