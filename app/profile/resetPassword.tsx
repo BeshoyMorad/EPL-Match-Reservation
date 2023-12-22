@@ -11,12 +11,10 @@ import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import { resetPasswordSchema } from "@/schemas/ResetPassword";
+import ResetPasswordInterface from "@/modules/IResetPassword";
+import {userRequest} from "@/services/instance";
+import {useState } from 'react'
 
-interface ResetPasswordInterface {
-  oldPassword: string;
-  password: string;
-  confirmPassword: string;
-}
 export interface ResetPasswordProps {
   open: boolean;
   onClose: () => void;
@@ -31,15 +29,17 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export default function ResetPassword(props: ResetPasswordProps) {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { onClose, open } = props;
   let resetPassword: ResetPasswordInterface = {
     oldPassword: "",
-    password: "",
+    newPassword: "",
     confirmPassword: "",
   };
   const clearFormik = () => {
     formik.values.confirmPassword = "";
-    formik.values.password = "";
+    formik.values.newPassword = "";
     formik.values.oldPassword = "";
   };
   const formik = useFormik({
@@ -47,8 +47,18 @@ export default function ResetPassword(props: ResetPasswordProps) {
     validationSchema: resetPasswordSchema,
     async onSubmit(values) {
       console.log(values);
-      clearFormik();
-      onClose();
+      await userRequest
+        .post("/reset-password", values)
+        .then((response) => {
+          console.log(response);
+          onClose();
+          clearFormik();
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(true);
+          setErrorMessage(error.response.data.error[0]);
+        });
       // Add your asynchronous logic here (e.g., API calls, etc.)
     },
   });
@@ -83,7 +93,7 @@ export default function ResetPassword(props: ResetPasswordProps) {
       <DialogContent dividers>
         <form onSubmit={formik.handleSubmit}>
           <TextField
-            className="mt-2"
+            sx={{ mt: 1 }}
             fullWidth
             id="outlined-adornment-old-password"
             type="password"
@@ -97,19 +107,21 @@ export default function ResetPassword(props: ResetPasswordProps) {
             helperText={formik.touched.oldPassword && formik.errors.oldPassword}
           />
           <TextField
-            className="mt-2"
+            sx={{ mt: 1 }}
             fullWidth
             id="outlined-adornment-password"
             type="password"
-            label="Password"
-            name="password"
-            value={formik.values.password}
+            label="New Password"
+            name="newPassword"
+            value={formik.values.newPassword}
             onChange={formik.handleChange}
-            error={formik.touched.password && Boolean(formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
+            error={
+              formik.touched.newPassword && Boolean(formik.errors.newPassword)
+            }
+            helperText={formik.touched.newPassword && formik.errors.newPassword}
           />
           <TextField
-            className="mt-2"
+            sx={{ mt: 1 }}
             fullWidth
             id="outlined-adornment-confirm-password"
             type="password"
@@ -125,6 +137,14 @@ export default function ResetPassword(props: ResetPasswordProps) {
               formik.touched.confirmPassword && formik.errors.confirmPassword
             }
           />
+          {error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "red" }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <div className="flex gap-2  items-center justify-end py-3">
             <Button
               className="mt-2"
