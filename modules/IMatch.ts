@@ -8,12 +8,15 @@ export default interface IMatch {
   linesman1: String;
   linesman2: String;
   homeTeamId: {
-    imagePath: "";
+    imagePath: String;
   };
   awayTeamId: {
-    imagePath: "";
+    imagePath: String;
   };
   venueId: {
-    name: "";
+    name: String;
+    seatsPerRow: number;
+    numberOfRows: number;
+    _id: String;
   };
 }

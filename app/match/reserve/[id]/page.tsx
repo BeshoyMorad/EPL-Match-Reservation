@@ -30,13 +30,14 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
     },
     venueId: {
       name: "",
+      numberOfRows: 0,
+      seatsPerRow: 0,
+      _id: "0",
     },
   });
-  const initialBoard = [
-    ["R", "F", "F", "F", "F"],
-    ["R", "R", "R", "F", "F"],
-    ["R", "F", "R", "F", "F"],
-  ];
+  const [initialBoard, setInitialBoard] = useState<string[][]>([]);
+
+
   useEffect(() => {
     userRequest
       .get(`/match/${params.id}`)
@@ -58,6 +59,9 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
           venueId: {
             ...prevProfile.venueId,
             name: response.data.venueId.name,
+            numberOfRows: response.data.venueId.numberOfRows,
+            seatsPerRow: response.data.venueId.seatsPerRow,
+            _id: response.data.venueId._id,
           },
           venue: response.data.venueId.name,
           dateAndTime: response.data.dateAndTime,
@@ -65,6 +69,13 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
           linesman1: response.data.firstLinesman,
           linesman2: response.data.secondLinesman,
         }));
+        const newInitialBoard = Array.from(
+          { length: response.data.venueId.numberOfRows },
+          () => Array(response.data.venueId.seatsPerRow).fill("F")
+        );
+
+        setInitialBoard(newInitialBoard);
+        setBoard(newInitialBoard);
       })
       .catch((error) => {
         console.log(error);
