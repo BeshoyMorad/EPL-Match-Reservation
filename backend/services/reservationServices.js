@@ -1,5 +1,7 @@
 import Reservation from "../models/Reservation.js";
 import errorHandlingUtils from "../utils/errorHandlingUtils.js";
+import { addMatchReservation, addMatchSpectator } from "./matchServices.js";
+import { addUserMatch, addUserReservation } from "./userServices.js";
 
 class reservationServices {
   static generateTimestampBasedID = async () => {
@@ -24,7 +26,7 @@ class reservationServices {
   };
 
   static validateReservation = async (reservation) => {
-    const isReservationExisting = this.getReservation(reservation);
+    const isReservationExisting = await this.getReservation(reservation);
     if (isReservationExisting)
       errorHandlingUtils.throwError("This Seat is already taken", 400);
   };
@@ -38,8 +40,16 @@ class reservationServices {
       matchId: reservation.matchId,
       seatIndex: reservation.seatIndex,
     }).save();
-    console.log(newReservation);
     return newReservation;
+  };
+
+  static finalizeReservationCreation = async (reservationBody, user, match) => {
+    const reservation = await this.createReservation(reservationBody);
+    await addUserMatch(user, match.id);
+    await addUserReservation(user, reservation);
+    await addMatchReservation(match, reservation);
+    await addMatchSpectator(match, user);
+    return reservation;
   };
 }
 

@@ -5,6 +5,7 @@ class checkUserServices {
   static getUserByUsername = async (username) => {
     const user = await User.findOne({ username: username });
     if (!user) errorHandlingUtils.throwError("This user isn't found", 404);
+    return user
   };
 
   static getUserById = async (id) => {

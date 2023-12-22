@@ -34,10 +34,8 @@ const matchSchema = mongoose.Schema({
   },
   spectators: [
     {
-      userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   ],
   reservations: [

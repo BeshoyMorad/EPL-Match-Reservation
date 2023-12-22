@@ -34,7 +34,12 @@ export function compareTeamIds(homeTeamId, awayTeamId) {
 }
 
 export async function addMatchReservation(match, reservation) {
-  match.reservations.push({ reservationId: reservation._id });
+  match.reservations.push(reservation.id);
+  await match.save();
+}
+
+export async function addMatchSpectator(match, user) {
+  match.spectators.push(user.id);
   await match.save();
 }
 
@@ -55,7 +60,9 @@ export async function getMatchById(matchId) {
   const match = await Match.findById(matchId)
     .populate("homeTeamId")
     .populate("awayTeamId")
-    .populate("venueId");
+    .populate("venueId")
+    .populate("spectators")
+    .populate("reservations");
   // .populate("reservations");
   if (!match) {
     const error = new Error("Match not found");

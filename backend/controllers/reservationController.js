@@ -1,20 +1,32 @@
 import checkUserServices from "../services/checkUserServices.js";
-import { addMatchReservation, getMatchById } from "../services/matchServices.js";
+import {
+  addMatchReservation,
+  addMatchSpectator,
+  getMatchById,
+} from "../services/matchServices.js";
 import reservationServices from "../services/reservationServices.js";
+import stadiumServices from "../services/stadiumServices.js";
 import { addUserMatch, addUserReservation } from "../services/userServices.js";
 import errorHandlingUtils from "../utils/errorHandlingUtils.js";
 
 class reservationController {
   static addReservation = async (req, res) => {
     try {
-      const user = checkUserServices.getUserByUsername(req.payload.username);
-      const match = await getMatchById(req.body.getMatchById)
+      const user = await checkUserServices.getUserByUsername(
+        req.payload.username
+      );
+      const match = await getMatchById(req.body.matchId);
+      console.log(match)
       await reservationServices.validateReservation(req.body);
-      const reservation = await reservationServices.createReservation(req.body);
-      await addMatchReservation(match,reservation)
-      await addUserReservation(user,reservation)
+
+      const reservation = await reservationServices.finalizeReservationCreation(
+        req.body,
+        user,
+        match
+      );
       res.status(201).json(reservation);
     } catch (error) {
+      console.log(error);
       let formattedError = errorHandlingUtils.formatError(error);
       res
         .status(formattedError.statusCode)
