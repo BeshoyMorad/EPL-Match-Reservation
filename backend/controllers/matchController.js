@@ -99,6 +99,7 @@ const getVacantSeats = async (req, res) => {
     const vacantSeats = await computeVacantSeats(matchId);
     return res.status(200).json(vacantSeats);
   } catch (error) {
+    console.log(error)
     if (error.statusCode) {
       res.status(error.statusCode).json({ error: [error.message] });
     } else {

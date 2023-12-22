@@ -33,14 +33,12 @@ matchRouter.get("/matches", matchController.getMatches);
 
 matchRouter.get(
   "/vacant-seats/:id",
-  verifyAuthToken,
   checkId,
   matchController.getVacantSeats
 );
 
 matchRouter.get(
   "/reserved-seats/:id",
-  verifyAuthToken,
   checkId,
   matchController.getReservedSeats
 );

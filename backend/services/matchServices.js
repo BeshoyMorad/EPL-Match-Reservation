@@ -102,9 +102,10 @@ export async function computeVacantSeats(matchId) {
   const match = await getMatchById(matchId);
   const venue = match.venueId;
   const totalCapacity = venue.numberOfRows * venue.seatsPerRow;
-  const reservedSeats = reservations.map(
+  const reservedSeats = match.reservations.map(
     (reservation) => reservation.seatIndex
   );
+  console.log(reservedSeats)
   const vacantSeats = [];
   for (let i = 0; i < totalCapacity; i++) {
     if (!reservedSeats.includes(i)) {
