@@ -16,7 +16,7 @@ class reservationController {
         req.payload.username
       );
       const match = await getMatchById(req.body.matchId);
-      console.log(match)
+      reservationServices.validateSeat(match.venueId, req.body.seatIndex);
       await reservationServices.validateReservation(req.body);
 
       const reservation = await reservationServices.finalizeReservationCreation(

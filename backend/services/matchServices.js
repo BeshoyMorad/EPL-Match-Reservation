@@ -39,6 +39,9 @@ export async function addMatchReservation(match, reservation) {
 }
 
 export async function addMatchSpectator(match, user) {
+  for (let spectator of match.spectators) {
+    if (spectator.id.toString() === user.id.toString()) return;
+  }
   match.spectators.push(user.id);
   await match.save();
 }
@@ -63,7 +66,6 @@ export async function getMatchById(matchId) {
     .populate("venueId")
     .populate("spectators")
     .populate("reservations");
-  // .populate("reservations");
   if (!match) {
     const error = new Error("Match not found");
     error.statusCode = 400;

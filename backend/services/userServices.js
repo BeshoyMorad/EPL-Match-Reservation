@@ -178,10 +178,13 @@ export async function addUserReservation(user, reservation) {
 }
 
 export async function addUserMatch(user, matchId) {
+  for (let match of user.matches) {
+    if (match.matchId.toString() === matchId.toString()) return;
+  }
   user.matches.push({ matchId: matchId });
   await user.save();
 }
 
-export async function getUserReservation(user){
-  const reservations = user.reservation
+export async function getUserReservation(user) {
+  const reservations = user.reservation;
 }

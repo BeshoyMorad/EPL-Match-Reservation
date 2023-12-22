@@ -43,6 +43,17 @@ class reservationServices {
     return newReservation;
   };
 
+  static checkOnSeat = (stadium, seatIndex) => {
+    if (stadium.seatsPerRow * stadium.numberOfRows <= seatIndex) return false;
+    if (seatIndex < 0) return false;
+    return true;
+  };
+
+  static validateSeat = (stadium, seatIndex) => {
+    if (!this.checkOnSeat(stadium, seatIndex))
+      errorHandlingUtils.throwError("This seat isn't available in the stadium",400);
+  };
+
   static finalizeReservationCreation = async (reservationBody, user, match) => {
     const reservation = await this.createReservation(reservationBody);
     await addUserMatch(user, match.id);
