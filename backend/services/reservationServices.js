@@ -93,7 +93,7 @@ class reservationServices {
       headers: { authorization: reservation.token },
     });
     try {
-      const user = checkUserServices.getUserByUsername(payload.username);
+      const user = await checkUserServices.getUserByUsername(payload.username);
       const match = await getMatchById(reservation.matchId);
       for (let seat of reservation.seats) {
         this.socketsValidateSeat(match.venueId, reservation.seatIndex, io);
