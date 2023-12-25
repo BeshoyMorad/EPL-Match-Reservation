@@ -6,8 +6,11 @@ import ChairIcon from "@mui/icons-material/Chair";
 import { useEffect, useState } from "react";
 import { userRequest } from "@/services/instance";
 import IMatch from "@/modules/IMatch";
+import { useRouter } from "next/navigation";
 
 export default function MatchDetails({ params }: { params: { id: string } }) {
+  const router = useRouter();
+
   const [match, setMatch] = useState<IMatch>({
     _id: "1",
     homeTeam: "Team 1",
@@ -41,8 +44,8 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
         setMatch((prevProfile) => ({
           ...prevProfile,
           _id: response.data._id,
-          homeTeam: response.data.homeTeam,
-          awayTeam: response.data.awayTeam,
+          homeTeam: response.data.homeTeamId?.name,
+          awayTeam: response.data.awayTeamId?.name,
           homeTeamId: {
             ...prevProfile.homeTeamId,
             imagePath: response.data.homeTeamId.imagePath,
@@ -72,9 +75,28 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
         setInitialBoard(newInitialBoard);
       })
       .catch((error) => {
-        console.log(error);
+        router.push("/");
       });
   }, []);
+  useEffect(() => {
+    userRequest
+      .get(`/reserved-seats/${match._id}`)
+      .then((response) => {
+        console.log(response);
+        const reservedSeatIndices = response.data;
+        const seatsPerRow = match.venueId.seatsPerRow;
+        const updatedBoard = initialBoard.map((row, i) =>
+          row.map((cell, j) => {
+            const seatIndex = i * seatsPerRow + j;
+
+            return reservedSeatIndices.includes(seatIndex) ? "R" : cell;
+          })
+        );
+
+        setInitialBoard(updatedBoard);
+      })
+      .catch((error) => {});
+  }, [match]);
   return (
     <Container
       sx={{
@@ -92,7 +114,7 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
           width: "100%",
         }}
       >
-        <h1 className="text-center text-3xl text-[var(--main-color)] font-bold mt-5">
+        <h1 className="text-3xl text-[var(--main-color)] font-bold mt-5">
           Match Details
         </h1>
         <MatchSection match={match}></MatchSection>

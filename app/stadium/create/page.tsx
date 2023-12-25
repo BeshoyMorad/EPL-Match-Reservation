@@ -5,15 +5,20 @@ import { stadiumSchema } from "@/schemas/Stadium";
 import { useFormik } from "formik";
 import { userRequest } from "@/services/instance";
 import { useRouter } from "next/navigation";
-import {useState} from "react"
+import { useState } from "react";
 import Stadium from "@/modules/IStaduim";
-
+import { useCookies } from "react-cookie";
 
 export default function CreateStadium() {
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter();
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
+  const router = useRouter();
+  const [cookies] = useCookies(["role"]);
+  const isManager = cookies.role === "manager";
+  if (!isManager) {
+    router.push("/");
+  }
   let stadium: Stadium = {
     stadiumName: "",
     numberOfRows: undefined,
@@ -34,8 +39,7 @@ export default function CreateStadium() {
           console.error("Error:", error);
           if (error.response.status === 401) {
             router.push("/signin");
-          }
-          else {
+          } else {
             setError(true);
             setErrorMessage(error.response.data.error);
           }

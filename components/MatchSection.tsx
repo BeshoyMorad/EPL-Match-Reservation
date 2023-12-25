@@ -11,23 +11,23 @@ const MatchSection = ({ match }: { match: IMatch }) => {
   return (
     <>
       <div className="teams flex gap-5 items-center justify-center py-3">
-        <div className="flex items-center gap-2">
-          <div className="text-xl font-semibold">{match.homeTeam}</div>
+        <div className="flex justify-center items-center flex-col gap-2">
           <Image
-            src={match.homeTeamId?.imagePath}
+            src={match.homeTeamId?.imagePath as string}
             width={38}
             height={38}
             alt="team"
           />
+          <div className="text-xl font-semibold">{match.homeTeam}</div>
         </div>
 
         <span className="font-medium">
           {moment(match.dateAndTime).format("h:mm A")}
         </span>
 
-        <div className="flex items-center gap-2">
+        <div className="flex justify-center items-center flex-col gap-2">
           <Image
-            src={match.awayTeamId?.imagePath}
+            src={match.awayTeamId?.imagePath as string}
             width={38}
             height={38}
             alt="team"

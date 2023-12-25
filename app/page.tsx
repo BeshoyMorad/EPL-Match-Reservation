@@ -1,7 +1,7 @@
 "use client";
 
 import Match from "@/components/Match";
-import { Button, Container } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import QueueOutlinedIcon from "@mui/icons-material/QueueOutlined";
 import { useEffect, useState } from "react";
 import IMatch from "@/modules/IMatch";
@@ -45,7 +45,9 @@ export default function Home() {
         <h1 className="text-center text-3xl font-bold mt-5">No Matches Yet</h1>
       )}
       {matches.map((match) => (
-        <Match key={match._id} match={match} />
+        <Box key={match._id} sx={{marginTop:'8px'}}>
+          <Match match={match} />
+        </Box>
       ))}
     </Container>
   );
