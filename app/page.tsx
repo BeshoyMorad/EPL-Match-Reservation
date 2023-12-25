@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import IMatch from "@/modules/IMatch";
 import { userRequest } from "@/services/instance";
 import { useCookies } from "react-cookie";
+import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 export default function Home() {
   const [matches, setMatches] = useState<IMatch[]>([]);
@@ -25,27 +26,48 @@ export default function Home() {
   return (
     <Container className="mt-5">
       {role === "manager" && (
-        <Button
+        <Box
           sx={{
-            border: "2px solid var(--main-color)",
-            color: "var(--main-color)",
-            display: "block",
-            width: "fit-content",
-            ml: "auto",
-            mb: "1rem",
+            display: "flex",
+            gap: "2px",
+            alignItems: "center",
+            justifyContent: "center",
           }}
-          href="/match/create"
         >
-          <QueueOutlinedIcon />
-          <span className="ml-2">Add New Match</span>
-        </Button>
+          <Button
+            sx={{
+              border: "2px solid var(--main-color)",
+              color: "var(--main-color)",
+              display: "block",
+              width: "fit-content",
+              mb: "1rem",
+            }}
+            href="/match/create"
+          >
+            <QueueOutlinedIcon />
+            <span className="ml-2">Add New Match</span>
+          </Button>
+          <Button
+            sx={{
+              border: "2px solid var(--main-color)",
+              color: "var(--main-color)",
+              display: "block",
+              width: "fit-content",
+              mb: "1rem",
+            }}
+            href="/stadium/create"
+          >
+            <SaveAsIcon />
+            <span className="ml-2">Create Stadium</span>
+          </Button>
+        </Box>
       )}
 
       {matches.length === 0 && (
         <h1 className="text-center text-3xl font-bold mt-5">No Matches Yet</h1>
       )}
       {matches.map((match) => (
-        <Box key={match._id} sx={{marginTop:'8px'}}>
+        <Box key={match._id} sx={{ marginTop: "8px" }}>
           <Match match={match} />
         </Box>
       ))}
