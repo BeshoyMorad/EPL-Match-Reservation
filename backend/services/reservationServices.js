@@ -99,7 +99,7 @@ class reservationServices {
         this.socketsValidateSeat(match.venueId, reservation.seatIndex, io);
 
         reservationObject = {
-          reservationDate: reservation.date,
+          date: reservation.date,
           customerId: payload.userId,
           matchId: reservation.matchId,
           seatIndex: seat,
@@ -112,8 +112,9 @@ class reservationServices {
           match
         );
       }
+
       io.emit(
-        "reservationDone",
+        "reserveSeat",
         `seats ${reservation.seats} has been reserved successfully`
       );
     } catch ( error )
