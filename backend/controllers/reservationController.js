@@ -1,7 +1,5 @@
 import checkUserServices from "../services/checkUserServices.js";
 import {
-  addMatchReservation,
-  addMatchSpectator,
   getMatchById,
 } from "../services/matchServices.js";
 import reservationServices from "../services/reservationServices.js";
