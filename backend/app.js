@@ -20,7 +20,11 @@ import reservationServices from "./services/reservationServices.js";
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    credentials: true,
+  },
+});
 
 dotenv.config();
 
@@ -54,7 +58,7 @@ io.on("connection", (socket) => {
   // Client side says there is a user want to reserve
   // reservation consists of matchId,Date,seats(index),token
   socket.on("reserveSeat", async (reservation) => {
-    reservationServices.socketsReservation(reservation);
+    await reservationServices.socketsReservation(reservation, io);
   });
 
   socket.on("disconnect", () => {
