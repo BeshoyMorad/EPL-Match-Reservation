@@ -14,8 +14,8 @@ import IMatch from "@/modules/IMatch";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 
-export default function ReserveMatch({ params }: { params: { id: string; }; }) {
-  const [cookies] = useCookies(["token","isAdmin"]);
+export default function ReserveMatch({ params }: { params: { id: string } }) {
+  const [cookies] = useCookies(["token", "isAdmin"]);
   const isLoggedIn = cookies.token;
   const router = useRouter();
   const [match, setMatch] = useState<IMatch>({
@@ -110,6 +110,17 @@ export default function ReserveMatch({ params }: { params: { id: string; }; }) {
         );
         setInitialBoard(updatedBoard);
         setBoard(updatedBoard);
+      });
+      userRequest.get(`/user/reservation/${match._id}`).then((response) => {
+        const reservedSeatIndices = response.data;
+        const seatsPerRow = match.venueId.seatsPerRow;
+        // const numberOfRows = match.venueId.numberOfRows;
+        const tempData: any[] = [];
+        reservedSeatIndices.map((ele: any) => {
+          let row = Math.floor(ele / seatsPerRow);
+          tempData.push({ row, col: ele - row * seatsPerRow });
+        });
+        setYourSeats(tempData);
       });
     }
     //** get seats of user */
@@ -241,10 +252,10 @@ export default function ReserveMatch({ params }: { params: { id: string; }; }) {
           </div>
         </div>
         <div className="mt-3">
-          <h2 className="font-bold">Your Reservation, </h2>
+          <h2 className="font-bold">Your Reservation</h2>
           <span style={{ fontSize: "14px" }}>
-            Note: you can cancel it if reserved ticket only 3 days before the start of
-            the event.
+            Note: you can cancel it if reserved ticket only 3 days before the
+            start of the event.
           </span>
           <ul>
             {yourSeats.map((seat, index) => (
