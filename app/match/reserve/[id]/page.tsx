@@ -11,11 +11,13 @@ import { pinSchema } from "@/schemas/pin";
 import { useFormik } from "formik";
 import { userRequest } from "@/services/instance";
 import IMatch from "@/modules/IMatch";
-import { socket } from "@/socket/socket";
 import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
-export default function ReserveMatch({ params }: { params: { id: string } }) {
-  const [cookies] = useCookies(["token"]);
+export default function ReserveMatch({ params }: { params: { id: string; }; }) {
+  const [cookies] = useCookies(["token","isAdmin"]);
+  const isLoggedIn = cookies.token;
+  const router = useRouter();
   const [match, setMatch] = useState<IMatch>({
     _id: "1",
     homeTeam: "",
@@ -49,6 +51,9 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
+    if (!isLoggedIn || cookies.isAdmin) {
+      router.push("/");
+    }
     userRequest
       .get(`/match/${params.id}`)
       .then((response) => {
@@ -107,36 +112,9 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
         setBoard(updatedBoard);
       });
     }
-     //** get seats of user */
+    //** get seats of user */
   }, [match]);
 
-  useEffect(() => {
-    function onConnect() {
-      console.log("connected");
-    }
-
-    function onDisconnect() {
-      console.log("dis connected");
-    }
-
-    function onFooEvent(value: any) {
-      console.log(value);
-    }
-    socket.on("reservationError", (message) => {
-      console.log(`Reservation Error: ${message}`);
-      setError(true);
-      setErrorMessage(message);
-    });
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("reserveSeat", onFooEvent);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("reserveSeat", onFooEvent);
-    };
-  }, []);
   const handleSeatClick = (rowIndex: number, colIndex: number) => {
     const updatedBoard = [...board];
     const seatValue = updatedBoard[rowIndex][colIndex];
@@ -163,7 +141,7 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
   };
   const cancelSeats = (rowIndex: number, colIndex: number) => {
     /** cancel socket */
-  }
+  };
   // console.log(params.id);
   let pin: IPin = {
     creditCardNumber: null,
@@ -182,11 +160,21 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
       const reservation = {
         matchId: match._id,
         seats,
-        token: `Bearer ${cookies.token}`,
-        date:new Date()
+        date: new Date(),
       };
       console.log(reservation);
-      socket.emit("reserveSeat", reservation);
+      userRequest
+        .post("/reservation", reservation)
+        .then(() => {
+          setError(false);
+          setErrorMessage("Successfully Reserve seat");
+          setYourSeats((prevSeats) => [...prevSeats, ...selectedSeats]);
+          setSelectedSeats([]);
+        })
+        .catch((error) => {
+          setError(true);
+          setErrorMessage(error.response.data.error);
+        });
     },
   });
   return (
@@ -255,7 +243,7 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
         <div className="mt-3">
           <h2 className="font-bold">Your Reservation, </h2>
           <span style={{ fontSize: "14px" }}>
-            you can cancel it if reserved ticket only 3 days before the start of
+            Note: you can cancel it if reserved ticket only 3 days before the start of
             the event.
           </span>
           <ul>
@@ -319,6 +307,14 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
             <div
               className="flex justify-center items-start gap-5 mt-3"
               style={{ color: "red" }}
+            >
+              {errorMessage}
+            </div>
+          )}
+          {!error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "green" }}
             >
               {errorMessage}
             </div>

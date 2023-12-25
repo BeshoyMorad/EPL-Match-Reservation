@@ -56,20 +56,18 @@ export default function Navbar() {
   return (
     <nav className="flex items-center px-3 bg-[var(--main-color)] mt-3 rounded-xl w-[98%] m-auto">
       <Typography
-        variant="h6"
+        // variant="h6"
         noWrap
         sx={{
           mr: 2,
           display: "flex",
-          fontFamily: "monospace",
           fontWeight: 700,
-          letterSpacing: ".3rem",
           color: "white",
           textDecoration: "none",
           flexGrow: 1,
         }}
       >
-        LOGO
+        شجع وادلع
       </Typography>
 
       <Box sx={{ display: "flex" }}>
