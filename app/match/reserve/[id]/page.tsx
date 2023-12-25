@@ -13,6 +13,7 @@ import { userRequest } from "@/services/instance";
 import IMatch from "@/modules/IMatch";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
+import { AxiosRequestConfig } from "axios";
 
 export default function ReserveMatch({ params }: { params: { id: string } }) {
   const [cookies] = useCookies(["token", "isAdmin"]);
@@ -118,7 +119,7 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
         const tempData: any[] = [];
         reservedSeatIndices.map((ele: any) => {
           let row = Math.floor(ele / seatsPerRow);
-          tempData.push({ row, col: ele - row * seatsPerRow });
+          tempData.push({ row:row +1 , col: (ele - row * seatsPerRow) +1 });
         });
         setYourSeats(tempData);
       });
@@ -152,6 +153,33 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
   };
   const cancelSeats = (rowIndex: number, colIndex: number) => {
     /** cancel socket */
+    const seat = (rowIndex - 1) * match.venueId.seatsPerRow + colIndex - 1
+    const updatedBoard = [...board];
+      const reservation = {
+        matchId: match._id,
+        seats: [seat],
+      };
+    const config: AxiosRequestConfig<any> = {
+      data: reservation,
+    };
+    userRequest
+      .delete(`/reservation`, config)
+      .then(() => {
+        updatedBoard[rowIndex - 1][colIndex - 1] = "F";
+        setYourSeats(
+          yourSeats.filter(
+            (seat) => seat.row !== rowIndex || seat.col !== colIndex
+          )
+        );
+        setError(false);
+        setErrorMessage(
+          "Successfully Delete Seat. Row:" + rowIndex + " Col:" + colIndex
+        );
+      })
+      .catch((error) => {
+        setError(true);
+        setErrorMessage(error.response.data.error);
+      });
   };
   // console.log(params.id);
   let pin: IPin = {
@@ -163,6 +191,12 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
     initialValues: pin,
     validationSchema: pinSchema,
     async onSubmit(values) {
+      if (selectedSeats.length==0)
+      {
+        setError(true)
+        setErrorMessage("Yo Should select seats")
+        return
+      }
       const seats: number[] = [];
       selectedSeats.map((seat) => {
         seats.push((seat.row - 1) * match.venueId.seatsPerRow + seat.col - 1);
@@ -251,7 +285,7 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
             ))}
           </div>
         </div>
-        <div className="mt-3">
+        <div className="mt-3" style={{borderBottom:'1px solid black', paddingBottom:'4px'}}>
           <h2 className="font-bold">Your Reservation</h2>
           <span style={{ fontSize: "14px" }}>
             Note: you can cancel it if reserved ticket only 3 days before the
@@ -261,7 +295,7 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
             {yourSeats.map((seat, index) => (
               <li key={index}>
                 Row: {seat.row}, Col: {seat.col}{" "}
-                <button onClick={() => clearSeats(seat.row, seat.col)}>
+                <button onClick={() => cancelSeats(seat.row, seat.col)}>
                   <HighlightOffIcon style={{ color: "red" }}></HighlightOffIcon>
                 </button>
               </li>
