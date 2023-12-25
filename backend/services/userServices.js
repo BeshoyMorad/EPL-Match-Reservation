@@ -153,10 +153,6 @@ export async function removeMatchFromUser(user, matchId) {
   await user.save();
 }
 
-export async function addReservationToUser(user, reservationId) {
-  user.reservations.push({ reservationId: reservationId });
-  await user.save();
-}
 
 export async function removeReservationFromUser(user, reservationId) {
   const reservationIndex = user.reservations.findIndex(
@@ -178,7 +174,6 @@ export async function addUserReservation(user, reservation) {
 }
 
 export async function addUserMatch(user, matchId) {
-  
   for (let match of user.matches) {
     if (match.matchId.toString() === matchId.toString()) return;
   }

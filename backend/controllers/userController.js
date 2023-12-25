@@ -3,6 +3,7 @@ import stadiumServices from "../services/stadiumServices.js";
 import errorHandlingUtils from "../utils/errorHandlingUtils.js";
 
 class userController {
+  
   static getReservation = async (req, res) => {
     try {
       const user = checkUserServices.getUserByUsername(req.payload.username);

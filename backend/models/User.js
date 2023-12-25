@@ -61,15 +61,6 @@ const userSchema = mongoose.Schema({
       },
     },
   ],
-  reservations: [
-    {
-      reservationId: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: "Reservation",
-      },
-    },
-  ],
 });
 
 const User = mongoose.model("User", userSchema);

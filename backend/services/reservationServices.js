@@ -23,6 +23,34 @@ class reservationServices {
     else return maxReservation.ticketNumber + 1;
   };
 
+  static deleteMatchFromUser = async (user, match) => {
+    const reservation = await Reservation.findOne({
+      customerId: user.id,
+      match: match.id,
+    });
+    if (!reservation) {
+      user.matches = user.matches.filter((userMatch) => {
+        return match.id.toString() !== userMatch.matchId.toString();
+      });
+
+      match.spectators = match.spectators.filter((spectator) => {
+        return user.id.toString() !== spectator.toString();
+      });
+
+      await user.save();
+      await match.save();
+    }
+  };
+
+  static handleDeleteReservation = async (seats, user, match) => {
+    await Reservation.deleteMany({
+      seatIndex: { $in: seats },
+      matchId: match.id,
+    });
+
+    await this.deleteMatchFromUser(user, match);
+  };
+
   static getReservation = async (reservation) => {
     const existingReservation = await Reservation.findOne({
       seatIndex: reservation.seatIndex,
@@ -34,7 +62,10 @@ class reservationServices {
   static validateReservation = async (reservation) => {
     const isReservationExisting = await this.getReservation(reservation);
     if (isReservationExisting)
-      errorHandlingUtils.throwError("This Seat is already taken", 400);
+      errorHandlingUtils.throwError(
+        `Seat ${reservation.seatIndex} is already taken`,
+        400
+      );
   };
 
   static createReservation = async (reservation) => {
@@ -58,7 +89,7 @@ class reservationServices {
   static validateSeat = (stadium, seatIndex) => {
     if (!this.checkOnSeat(stadium, seatIndex))
       errorHandlingUtils.throwError(
-        "This seat isn't available in the stadium",
+        `Seat ${seatIndex} isn't available in the stadium`,
         400
       );
   };
@@ -66,8 +97,6 @@ class reservationServices {
   static finalizeReservationCreation = async (reservationBody, user, match) => {
     const reservation = await this.createReservation(reservationBody);
     await addUserMatch(user, match.id);
-    await addUserReservation(user, reservation);
-    await addMatchReservation(match, reservation);
     await addMatchSpectator(match, user);
     return reservation;
   };
@@ -98,7 +127,7 @@ class reservationServices {
       for (let seat of reservation.seats) {
         this.socketsValidateSeat(match.venueId, reservation.seatIndex, io);
 
-        reservationObject = {
+        let reservationObject = {
           date: reservation.date,
           customerId: payload.userId,
           matchId: reservation.matchId,
@@ -113,12 +142,11 @@ class reservationServices {
         );
       }
 
-      io.emit(
-        "reserveSeat",
-        `seats ${reservation.seats} has been reserved successfully`
-      );
-    } catch ( error )
-    {
+      io.emit("reserveSeat", {
+        seats: reservation.seats,
+        match: reservation.matchId,
+      });
+    } catch (error) {
       console.log(error);
       io.emit("reservationError", `Cannot reserve the seat`);
     }

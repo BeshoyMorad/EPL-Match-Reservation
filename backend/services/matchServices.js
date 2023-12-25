@@ -2,6 +2,7 @@ import { checkValidId } from "../utils/validationUtils.js";
 import Team from "../models/Team.js";
 import Stadium from "../models/Stadium.js";
 import Match from "../models/Match.js";
+import Reservation from "../models/Reservation.js";
 
 export async function checkTeamId(teamId) {
   checkValidId(teamId);
@@ -64,8 +65,7 @@ export async function getMatchById(matchId) {
     .populate("homeTeamId")
     .populate("awayTeamId")
     .populate("venueId")
-    .populate("spectators")
-    .populate("reservations");
+    .populate("spectators");
   if (!match) {
     const error = new Error("Match not found");
     error.statusCode = 400;
@@ -91,6 +91,7 @@ export async function retrieveMatches() {
 
 export async function computeReservedSeats(matchId) {
   const match = await getMatchById(matchId);
+  match.reservations = await Reservation.find({ matchId: match.id });
   const reservations = match.reservations;
   const reservedSeats = reservations.map(
     (reservation) => reservation.seatIndex
@@ -100,12 +101,13 @@ export async function computeReservedSeats(matchId) {
 
 export async function computeVacantSeats(matchId) {
   const match = await getMatchById(matchId);
+  match.reservations = await Reservation.find({ matchId: match.id });
   const venue = match.venueId;
   const totalCapacity = venue.numberOfRows * venue.seatsPerRow;
   const reservedSeats = match.reservations.map(
     (reservation) => reservation.seatIndex
   );
-  console.log(reservedSeats)
+  console.log(reservedSeats);
   const vacantSeats = [];
   for (let i = 0; i < totalCapacity; i++) {
     if (!reservedSeats.includes(i)) {
