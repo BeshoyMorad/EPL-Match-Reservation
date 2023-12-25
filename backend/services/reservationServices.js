@@ -95,7 +95,7 @@ class reservationServices {
     try {
       const user = checkUserServices.getUserByUsername(payload.username);
       const match = await getMatchById(reservation.matchId);
-      for (seat of reservation.seats) {
+      for (let seat of reservation.seats) {
         this.socketsValidateSeat(match.venueId, reservation.seatIndex, io);
 
         reservationObject = {
