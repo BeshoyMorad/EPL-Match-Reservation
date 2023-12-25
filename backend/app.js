@@ -54,48 +54,7 @@ io.on("connection", (socket) => {
   // Client side says there is a user want to reserve
   // reservation consists of matchId,Date,seats(index),token
   socket.on("reserveSeat", async (reservation) => {
-    const payload = AuthServices.getPayload({
-      headers: { authorization: reservation.token },
-    });
-    let user, match, reservedSeats;
-    try {
-      user = await checkUserServices.getUserById(payload.userId);
-      match = await getMatchById(reservation.matchId);
-      //Get All reserved Seats
-      reservedSeats = await computeReservedSeats(reservation.matchId);
-      reservation.customerId = payload.userId;
-      //Check if seat is taken
-
-      //Checking if all places are reserved or not
-      let isAllReserved = true;
-      //looping over sent seats that you want to book
-      for (let seatIndex in reservation.seats) {
-        //checking if the seat is in the reserved seats
-        if (reservedSeats.includes(seatIndex)) {
-          //Then This one informs user that there is an error while booking the seat at that index
-          io.emit(
-            "reservationError",
-            `Seat Number ${seatIndex} has been reserved already`
-          );
-          isAllReserved = false;
-          continue;
-        }
-        //If not then this has been done successfully
-        const reservationDetails = await reservationServices.createReservation(
-          reservation
-        );
-        await addUserReservation(user, reservationDetails);
-        await addMatchReservation(match, reservationDetails);
-      }
-      //Then Add this match as match in user info
-      await addUserMatch(user, reservation.matchId);
-
-      if (isAllReserved) {
-        io.emit("reservationError", `Seats have been reserved successfully`);
-      }
-    } catch (error) {
-      io.emit("reservationError", `This user or Match doesn't exist`);
-    }
+    reservationServices.socketsReservation(reservation);
   });
 
   socket.on("disconnect", () => {

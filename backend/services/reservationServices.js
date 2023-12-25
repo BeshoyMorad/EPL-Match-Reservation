@@ -1,6 +1,12 @@
 import Reservation from "../models/Reservation.js";
 import errorHandlingUtils from "../utils/errorHandlingUtils.js";
-import { addMatchReservation, addMatchSpectator } from "./matchServices.js";
+import AuthServices from "./AuthServices.js";
+import checkUserServices from "./checkUserServices.js";
+import {
+  addMatchReservation,
+  addMatchSpectator,
+  getMatchById,
+} from "./matchServices.js";
 import { addUserMatch, addUserReservation } from "./userServices.js";
 
 class reservationServices {
@@ -51,7 +57,10 @@ class reservationServices {
 
   static validateSeat = (stadium, seatIndex) => {
     if (!this.checkOnSeat(stadium, seatIndex))
-      errorHandlingUtils.throwError("This seat isn't available in the stadium",400);
+      errorHandlingUtils.throwError(
+        "This seat isn't available in the stadium",
+        400
+      );
   };
 
   static finalizeReservationCreation = async (reservationBody, user, match) => {
@@ -61,6 +70,55 @@ class reservationServices {
     await addMatchReservation(match, reservation);
     await addMatchSpectator(match, user);
     return reservation;
+  };
+
+  static socketsValidateSeat = (stadium, seatIndex, io) => {
+    if (!this.checkOnSeat(stadium, seatIndex)) {
+      io.emit(
+        "reservationError",
+        `Seat Number ${seatIndex} doesn't exist in the stadium`
+      );
+    }
+  };
+
+  static socketsValidateReservation = async (reservation, io) => {
+    const isReservationExisting = await this.getReservation(reservation);
+    if (isReservationExisting) {
+      io.emit("reservationError", `this seat is already taken`);
+    }
+  };
+
+  static socketsReservation = async (reservation, io) => {
+    const payload = AuthServices.getPayload({
+      headers: { authorization: reservation.token },
+    });
+    try {
+      const user = checkUserServices.getUserByUsername(payload.username);
+      const match = await getMatchById(reservation.matchId);
+      for (seat of reservation.seats) {
+        this.socketsValidateSeat(match.venueId, reservation.seatIndex, io);
+
+        reservationObject = {
+          reservationDate: reservation.date,
+          customerId: payload.userId,
+          matchId: reservation.matchId,
+          seatIndex: seat,
+        };
+
+        await this.validateReservation(reservationObject);
+        await reservationServices.finalizeReservationCreation(
+          reservationObject,
+          user,
+          match
+        );
+      }
+      io.emit(
+        "reservationDone",
+        `seats ${reservation.seats} has been reserved successfully`
+      );
+    } catch (error) {
+      io.emit("reservationError", `Cannot reserve the seat`);
+    }
   };
 }
 
