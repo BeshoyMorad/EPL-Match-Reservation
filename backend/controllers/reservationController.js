@@ -9,9 +9,7 @@ import errorHandlingUtils from "../utils/errorHandlingUtils.js";
 class reservationController {
   static addReservation = async (req, res) => {
     try {
-      const user = await checkUserServices.getUserByUsername(
-        req.payload.username
-      );
+      const user = await checkUserServices.isFan(req.payload.username);
       req.body.customerId = req.payload.userId;
       req.user = user;
       const match = await getMatchById(req.body.matchId);
@@ -62,9 +60,7 @@ class reservationController {
 
   static cancelReservation = async (req, res) => {
     try {
-      const user = await checkUserServices.getUserByUsername(
-        req.payload.username
-      );
+      const user = await checkUserServices.isFan(req.payload.username);
       req.body.customerId = req.payload.userId;
       const currentDate = Date.now();
       const match = await getMatchById(req.body.matchId);
@@ -85,6 +81,14 @@ class reservationController {
             400
           );
         }
+        if (
+          isReservationExisting.customerId.toString() !==
+          req.payload.userId.toString()
+        )
+          errorHandlingUtils.throwError(
+            "You haven't reserved this seat already",
+            400
+          );
         const threeDaysLater = new Date(isReservationExisting.reservationDate);
         threeDaysLater.setDate(threeDaysLater.getDate() + 3);
         if (currentDate > threeDaysLater)
