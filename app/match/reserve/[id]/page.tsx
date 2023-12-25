@@ -11,8 +11,11 @@ import { pinSchema } from "@/schemas/pin";
 import { useFormik } from "formik";
 import { userRequest } from "@/services/instance";
 import IMatch from "@/modules/IMatch";
+import { socket } from "@/socket/socket";
+import { useCookies } from "react-cookie";
 
 export default function ReserveMatch({ params }: { params: { id: string } }) {
+  const [cookies] = useCookies(["token"]);
   const [match, setMatch] = useState<IMatch>({
     _id: "1",
     homeTeam: "",
@@ -40,12 +43,16 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
   const [selectedSeats, setSelectedSeats] = useState<
     { row: number; col: number }[]
   >([]);
-
+  const [yourSeats, setYourSeats] = useState<{ row: number; col: number }[]>(
+    []
+  );
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     userRequest
       .get(`/match/${params.id}`)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setMatch((prevProfile) => ({
           ...prevProfile,
           _id: response.data._id,
@@ -85,10 +92,9 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
       });
   }, []);
   useEffect(() => {
-    userRequest
-      .get(`/reserved-seats/${match._id}`)
-      .then((response) => {
-        console.log(response);
+    if (match._id != "1") {
+      userRequest.get(`/reserved-seats/${match._id}`).then((response) => {
+        // console.log(response);
         const reservedSeatIndices = response.data;
         const seatsPerRow = match.venueId.seatsPerRow;
         const updatedBoard = initialBoard.map((row, i) =>
@@ -99,12 +105,38 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
         );
         setInitialBoard(updatedBoard);
         setBoard(updatedBoard);
-
-      })
-      .catch((error) => {});
+      });
+    }
+     //** get seats of user */
   }, [match]);
 
+  useEffect(() => {
+    function onConnect() {
+      console.log("connected");
+    }
 
+    function onDisconnect() {
+      console.log("dis connected");
+    }
+
+    function onFooEvent(value: any) {
+      console.log(value);
+    }
+    socket.on("reservationError", (message) => {
+      console.log(`Reservation Error: ${message}`);
+      setError(true);
+      setErrorMessage(message);
+    });
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("reserveSeat", onFooEvent);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("reserveSeat", onFooEvent);
+    };
+  }, []);
   const handleSeatClick = (rowIndex: number, colIndex: number) => {
     const updatedBoard = [...board];
     const seatValue = updatedBoard[rowIndex][colIndex];
@@ -129,16 +161,32 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
     setSelectedSeats(updatedSelectedSeats);
     setBoard(updatedBoard);
   };
-  console.log(params.id);
+  const cancelSeats = (rowIndex: number, colIndex: number) => {
+    /** cancel socket */
+  }
+  // console.log(params.id);
   let pin: IPin = {
     creditCardNumber: null,
     pin: null,
   };
+  /* submit to reserve seat */
   const formik = useFormik({
     initialValues: pin,
     validationSchema: pinSchema,
     async onSubmit(values) {
-      console.log(values);
+      const seats: number[] = [];
+      selectedSeats.map((seat) => {
+        seats.push((seat.row - 1) * match.venueId.seatsPerRow + seat.col - 1);
+      });
+      console.log(seats);
+      const reservation = {
+        matchId: match._id,
+        seats,
+        token: `Bearer ${cookies.token}`,
+        date:new Date()
+      };
+      console.log(reservation);
+      socket.emit("reserveSeat", reservation);
     },
   });
   return (
@@ -205,6 +253,23 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
           </div>
         </div>
         <div className="mt-3">
+          <h2 className="font-bold">Your Reservation, </h2>
+          <span style={{ fontSize: "14px" }}>
+            you can cancel it if reserved ticket only 3 days before the start of
+            the event.
+          </span>
+          <ul>
+            {yourSeats.map((seat, index) => (
+              <li key={index}>
+                Row: {seat.row}, Col: {seat.col}{" "}
+                <button onClick={() => clearSeats(seat.row, seat.col)}>
+                  <HighlightOffIcon style={{ color: "red" }}></HighlightOffIcon>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="mt-3">
           <h2 className="font-bold">Selected Seats:</h2>
           <ul>
             {selectedSeats.map((seat, index) => (
@@ -250,6 +315,14 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
               helperText={formik.touched.pin && formik.errors.pin}
             />
           </div>
+          {error && (
+            <div
+              className="flex justify-center items-start gap-5 mt-3"
+              style={{ color: "red" }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <div className="book-ticket mt-5">
             <Button
               type="submit"

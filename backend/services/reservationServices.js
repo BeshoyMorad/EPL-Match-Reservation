@@ -116,7 +116,9 @@ class reservationServices {
         "reservationDone",
         `seats ${reservation.seats} has been reserved successfully`
       );
-    } catch (error) {
+    } catch ( error )
+    {
+      console.log(error);
       io.emit("reservationError", `Cannot reserve the seat`);
     }
   };
