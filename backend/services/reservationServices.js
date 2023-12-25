@@ -98,7 +98,7 @@ class reservationServices {
       for (let seat of reservation.seats) {
         this.socketsValidateSeat(match.venueId, reservation.seatIndex, io);
 
-        reservationObject = {
+        let reservationObject = {
           date: reservation.date,
           customerId: payload.userId,
           matchId: reservation.matchId,
