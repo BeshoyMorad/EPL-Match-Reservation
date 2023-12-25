@@ -18,6 +18,7 @@ class reservationController {
       req.match = match;
       req.badSeats = [];
       let isError = false;
+      if (req.body.seats.length === 0) isError = true;
       for (let seat of req.body.seats) {
         if (!reservationServices.checkOnSeat(match.venueId, seat)) {
           isError = true;
@@ -65,6 +66,7 @@ class reservationController {
         req.payload.username
       );
       req.body.customerId = req.payload.userId;
+      const currentDate = Date.now();
       const match = await getMatchById(req.body.matchId);
       for (let seat of req.body.seats) {
         if (!reservationServices.checkOnSeat(match.venueId, seat))
@@ -83,14 +85,22 @@ class reservationController {
             400
           );
         }
+        const threeDaysLater = new Date(isReservationExisting.reservationDate);
+        threeDaysLater.setDate(threeDaysLater.getDate() + 3);
+        if (currentDate > threeDaysLater)
+          errorHandlingUtils.throwError(
+            `You can't cancel your reservation as its more than three days after reservation date`,
+            400
+          );
       }
       await reservationServices.handleDeleteReservation(
         req.body.seats,
         user,
         match
       );
-      res.status(201).json(req.body.seats);
+      res.status(200).json(req.body.seats);
     } catch (error) {
+      console.log(error);
       let formattedError = errorHandlingUtils.formatError(error);
       res
         .status(formattedError.statusCode)
