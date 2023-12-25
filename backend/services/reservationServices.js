@@ -151,6 +151,17 @@ class reservationServices {
       io.emit("reservationError", `Cannot reserve the seat`);
     }
   };
+
+  static getUserReservations = async (matchId, user) => {
+    const reservations = await Reservation.find({
+      customerId: user.id,
+      matchId: matchId,
+    });
+    const reservedSeats = reservations.map(
+      (reservation) => reservation.seatIndex
+    );
+    return reservedSeats;
+  };
 }
 
 export default reservationServices;
