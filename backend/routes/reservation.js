@@ -10,4 +10,10 @@ reservationRouter.post(
   reservationController.addReservation
 );
 
+reservationRouter.delete(
+  "/reservation",
+  verifyAuthToken,
+  reservationController.cancelReservation
+);
+
 export default reservationRouter;
