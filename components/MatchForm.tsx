@@ -156,26 +156,26 @@ export default function MatchForm({ id }: { id: string | null }) {
           </MenuItem>
         ))}
       </TextField>
-
-      <TextField
-        select
-        fullWidth
-        sx={{ mt: 3 }}
-        label="Stadium"
-        id="stadium"
-        name="stadium"
-        value={formik.values.stadium}
-        onChange={formik.handleChange}
-        error={formik.touched.stadium && Boolean(formik.errors.stadium)}
-        helperText={formik.touched.stadium && formik.errors.stadium}
-      >
-        {stadiums.map((stadium) => (
-          <MenuItem key={stadium._id} value={stadium._id}>
-            {stadium.name}
-          </MenuItem>
-        ))}
-      </TextField>
-
+      {!id &&
+        <TextField
+          select
+          fullWidth
+          sx={{ mt: 3 }}
+          label="Stadium"
+          id="stadium"
+          name="stadium"
+          value={formik.values.stadium}
+          onChange={formik.handleChange}
+          error={formik.touched.stadium && Boolean(formik.errors.stadium)}
+          helperText={formik.touched.stadium && formik.errors.stadium}
+        >
+          {stadiums.map((stadium) => (
+            <MenuItem key={stadium._id} value={stadium._id}>
+              {stadium.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      }
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer sx={{ mt: 2 }} components={["DateTimePicker"]}>
           <DateTimePicker
