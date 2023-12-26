@@ -17,6 +17,7 @@ export default function SignOut() {
   removeCookie("role", { path: "/" });
 
   navigate.push("/signin");
+  navigate.refresh();
 
   return null;
 }

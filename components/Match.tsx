@@ -9,7 +9,7 @@ import MatchSection from "./MatchSection";
 import { useCookies } from "react-cookie";
 
 export default function Match({ match }: { match: IMatch }) {
-  const [cookies] = useCookies(["role"]);
+  const [cookies] = useCookies(["role", "token"]);
   const role = cookies.role;
 
   return (
@@ -33,26 +33,28 @@ export default function Match({ match }: { match: IMatch }) {
         <MatchSection match={match}></MatchSection>
       </Link>
 
-      <div className="book-ticket mt-5">
-        <Button
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            padding: "0.5rem 1rem",
-            backgroundColor: "var(--main-color)",
-            m: "auto",
-            color: "white",
-            "&:hover": {
-              backgroundColor: "#32d360",
-            },
-          }}
-          href={`/match/reserve/${match._id}`}
-        >
-          <ConfirmationNumberOutlinedIcon />
-          Book ticket
-        </Button>
-      </div>
+      {cookies.token && (
+        <div className="book-ticket mt-5">
+          <Button
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "var(--main-color)",
+              m: "auto",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#32d360",
+              },
+            }}
+            href={`/match/reserve/${match._id}`}
+          >
+            <ConfirmationNumberOutlinedIcon />
+            Book ticket
+          </Button>
+        </div>
+      )}
     </Paper>
   );
 }

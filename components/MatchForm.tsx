@@ -29,6 +29,8 @@ const getMatchById = async (id: string) => {
 };
 
 export default function MatchForm({ id }: { id: string | null }) {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [teams, setTeams] = useState<ITeam[]>([]);
   const [stadiums, setStadiums] = useState<IStadium[]>([]);
   const [waiting, setWaiting] = useState(false);
@@ -45,15 +47,27 @@ export default function MatchForm({ id }: { id: string | null }) {
 
   useEffect(() => {
     const fetchTeams = async () => {
-      const response = await userRequest.get("/teams");
-
-      setTeams(response.data);
+      await userRequest
+        .get("/teams")
+        .then((res) => {
+          setTeams(res.data);
+        })
+        .catch((err: any) => {
+          // setError(true);
+          // setErrorMessage(err.response.data.message[0]);
+        });
     };
 
     const fetchStadiums = async () => {
-      const response = await userRequest.get("/stadium");
-
-      setStadiums(response.data.stadiums);
+      await userRequest
+        .get("/stadium")
+        .then((response) => {
+          setStadiums(response.data.stadiums);
+        })
+        .catch((err: any) => {
+          // setError(true);
+          // setErrorMessage(err.response.data.message[0]);
+        });
     };
 
     fetchTeams();
@@ -89,28 +103,44 @@ export default function MatchForm({ id }: { id: string | null }) {
 
       if (id) {
         // Update
-        await userRequest.put(`/match/${id}`, {
-          homeTeamId: values.homeTeam,
-          awayTeamId: values.awayTeam,
-          venueId: values.stadium,
-          dateAndTime: values.date,
-          mainReferee: values.mainReferee,
-          firstLinesman: values.linesman1,
-          secondLinesman: values.linesman2,
-        });
-        navigate.push("/");
+        await userRequest
+          .put(`/match/${id}`, {
+            homeTeamId: values.homeTeam,
+            awayTeamId: values.awayTeam,
+            venueId: values.stadium,
+            dateAndTime: values.date,
+            mainReferee: values.mainReferee,
+            firstLinesman: values.linesman1,
+            secondLinesman: values.linesman2,
+          })
+          .then(() => {
+            navigate.push("/");
+          })
+          .catch((err) => {
+            console.log(err);
+            setError(true);
+            setErrorMessage(err.response.data.error[0]);
+          });
       } else {
         // Create
-        await userRequest.post("/match", {
-          homeTeamId: values.homeTeam,
-          awayTeamId: values.awayTeam,
-          venueId: values.stadium,
-          dateAndTime: values.date,
-          mainReferee: values.mainReferee,
-          firstLinesman: values.linesman1,
-          secondLinesman: values.linesman2,
-        });
-        navigate.push("/");
+        await userRequest
+          .post("/match", {
+            homeTeamId: values.homeTeam,
+            awayTeamId: values.awayTeam,
+            venueId: values.stadium,
+            dateAndTime: values.date,
+            mainReferee: values.mainReferee,
+            firstLinesman: values.linesman1,
+            secondLinesman: values.linesman2,
+          })
+          .then(() => {
+            navigate.push("/");
+          })
+          .catch((err) => {
+            console.log(err);
+            setError(true);
+            setErrorMessage(err.response.data.error[0]);
+          });;
       }
 
       setWaiting(false);
@@ -156,7 +186,7 @@ export default function MatchForm({ id }: { id: string | null }) {
           </MenuItem>
         ))}
       </TextField>
-      {!id &&
+      {!id && (
         <TextField
           select
           fullWidth
@@ -175,7 +205,7 @@ export default function MatchForm({ id }: { id: string | null }) {
             </MenuItem>
           ))}
         </TextField>
-      }
+      )}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer sx={{ mt: 2 }} components={["DateTimePicker"]}>
           <DateTimePicker
@@ -228,24 +258,24 @@ export default function MatchForm({ id }: { id: string | null }) {
         error={formik.touched.linesman2 && Boolean(formik.errors.linesman2)}
         helperText={formik.touched.linesman2 && formik.errors.linesman2}
       />
-
+      {error && (
+        <div
+          className="flex justify-center items-start gap-5 mt-3"
+          style={{ color: "red" }}
+        >
+          {errorMessage}
+        </div>
+      )}
       <Button
         fullWidth
         type="submit"
-        disabled={waiting}
         sx={{
           mt: 3,
           border: "2px solid var(--main-color)",
           color: "var(--main-color)",
         }}
       >
-        {!waiting
-          ? id
-            ? "Update"
-            : "Create"
-          : id
-          ? "Updating..."
-          : "Creating..."}
+        {id ? "Update" : "Create"}
       </Button>
     </form>
   );

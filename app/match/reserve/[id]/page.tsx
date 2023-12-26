@@ -14,6 +14,7 @@ import IMatch from "@/modules/IMatch";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 import { AxiosRequestConfig } from "axios";
+import { set } from "date-fns";
 
 export default function ReserveMatch({ params }: { params: { id: string } }) {
   const [cookies] = useCookies(["token", "isAdmin"]);
@@ -122,6 +123,9 @@ export default function ReserveMatch({ params }: { params: { id: string } }) {
           tempData.push({ row:row +1 , col: (ele - row * seatsPerRow) +1 });
         });
         setYourSeats(tempData);
+      }).catch((error) => { 
+        setError(true);
+        setErrorMessage(error.response.data.error);
       });
     }
     //** get seats of user */

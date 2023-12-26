@@ -45,7 +45,10 @@ class reservationController {
           400
         );
       res.status(201).json(req.body.seats);
-    } catch (error) {
+    } catch ( error )
+    {
+      console.log( error )
+      if(req.badSeats && req.user &&req.match)
       await reservationServices.handleDeleteReservation(
         req.badSeats,
         req.user,

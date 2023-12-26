@@ -56,8 +56,12 @@ export default function SignIn() {
           });
           if (response.data.isAdmin) {
             router.push("/admin");
+            router.refresh();
+
           } else {
             router.push("/");
+            router.refresh();
+
           }
         })
         .catch((error) => {

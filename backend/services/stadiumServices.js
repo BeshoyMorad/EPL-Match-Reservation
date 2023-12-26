@@ -2,7 +2,15 @@ import Stadium from "../models/Stadium.js";
 import errorHandlingUtils from "../utils/errorHandlingUtils.js";
 
 class stadiumServices {
-  static createStadium = async (body) => {
+  static createStadium = async ( body ) =>
+  {
+    if ( body.numberOfRows > 10 )
+    {
+      errorHandlingUtils.throwError("Number Of rows must be less than 10",400)
+    }
+    if (body.seatsPerRow > 10) {
+      errorHandlingUtils.throwError("Number Of columns must be less than 10", 400);
+    }
     const stadium = await new Stadium({
       name: body.stadiumName,
       numberOfRows: body.numberOfRows,

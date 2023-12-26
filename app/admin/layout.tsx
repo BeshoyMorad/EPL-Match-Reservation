@@ -12,10 +12,14 @@ export default function AdminPanelLayout({
   const [cookies] = useCookies(["isAdmin"]);
   const navigate = useRouter();
 
-  if (!cookies.isAdmin) {
+  console.log(cookies);
+  
+  if (!cookies || !cookies.isAdmin) {
     navigate.push("/signin");
+    navigate.refresh();
+    return null;
   }
-
+  
   return (
     <Container maxWidth="lg" className="mt-5">
       {children}
