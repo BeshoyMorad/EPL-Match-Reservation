@@ -33,7 +33,9 @@ const createMatch = async (req, res) => {
       secondLinesman,
     });
     return res.status(201).json("Match created successfully");
-  } catch (error) {
+  } catch ( error )
+  {
+    console.log(error)
     if (error.statusCode) {
       res.status(error.statusCode).json({ error: [error.message] });
     } else {

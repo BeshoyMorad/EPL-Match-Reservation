@@ -32,13 +32,23 @@ export async function compareTeamIds(homeTeamId, awayTeamId, dateAndTime) {
     error.statusCode = 400;
     throw error;
   }
-  if (dateAndTime) {
-    let afterdateAndTime = dateAndTime + 1;
-    let beforedateAndTime = dateAndTime - 1;
+  if ( dateAndTime )
+  {
+    if (typeof dateAndTime === "string") dateAndTime = new Date(dateAndTime);
+
+    let afterdateAndTime =new Date();
+    let beforedateAndTime = new Date();
+
+    afterdateAndTime.setDate(dateAndTime.getDate() + 1);
+    beforedateAndTime.setDate( dateAndTime.getDate() - 1 );
+    
+    
     const homehomeMatches = await Match.find({
       homeTeamId: homeTeamId,
       dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
-    });
+    } );
+    
+    console.log(homehomeMatches);
     const awayawayMatches = await Match.find({
       awayTeamId: awayTeamId,
       dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
@@ -50,12 +60,12 @@ export async function compareTeamIds(homeTeamId, awayTeamId, dateAndTime) {
     const awayhomeMatches = await Match.find({
       awayTeamId: homeTeamId,
       dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
-    });
+    } );
     if (
-      homeawayMatches ||
-      awayawayMatches ||
-      homehomeMatches ||
-      awayhomeMatches
+      homeawayMatches.length != 0 ||
+      awayawayMatches.length != 0 ||
+      homehomeMatches.length != 0 ||
+      awayhomeMatches.length != 0
     ) {
       const error = new Error(
         "One of those teams is already playing on this day"
