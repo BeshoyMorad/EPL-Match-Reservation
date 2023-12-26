@@ -22,7 +22,7 @@ const createMatch = async (req, res) => {
     } = req.body;
     const username = req.payload.username;
     await checkUserRole(username, "manager");
-    await validateMatchDetails(homeTeamId, awayTeamId, venueId);
+    await validateMatchDetails(homeTeamId, awayTeamId, venueId, dateAndTime);
     await addNewMatch({
       homeTeamId,
       awayTeamId,
@@ -52,7 +52,8 @@ const editMatch = async (req, res) => {
     await validateMatchDetails(
       req.body.homeTeamId,
       req.body.awayTeamId,
-      req.body.venueId
+      req.body.venueId,
+      req.body.dateAndTime
     );
     await updateMatch(match, req.body);
     return res.status(200).json("Match updated successfully");

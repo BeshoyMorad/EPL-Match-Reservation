@@ -52,11 +52,47 @@ export async function addNewMatch(matchDetails) {
   await newMatch.save();
 }
 
-export async function validateMatchDetails(homeTeamId, awayTeamId, venueId) {
+export async function checkMatchTime ( venueId, dateAndTime )
+{
+  if (typeof dateAndTime === "string") dateAndTime = new Date( dateAndTime );
+  if ( dateAndTime < Date.now() )
+  {
+    const error = new Error("Match date must be in the future");
+    error.statusCode = 400;
+    throw error;
+  }
+  const matches = await Match.find({
+    venueId: venueId
+  } ).sort({dateAndTime: -1});
+  if ( !matches )
+  {
+    return true;
+  }
+  for ( let match of matches )
+  {
+    // Calculate the time difference in milliseconds
+    const timeDifference = Math.abs(match.dateAndTime - dateAndTime);
+  
+    // Convert milliseconds to hours
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+  
+    // Check if the difference is at least 2 hours
+    if ( hoursDifference < 3 )
+    {
+      const error = new Error("Close dates between the available matches");
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+    
+}
+
+export async function validateMatchDetails(homeTeamId, awayTeamId, venueId, dateAndTime) {
   homeTeamId && awayTeamId && compareTeamIds(homeTeamId, awayTeamId);
   homeTeamId && (await checkTeamId(homeTeamId));
   awayTeamId && (await checkTeamId(awayTeamId));
-  venueId && (await checkVenueId(venueId));
+  venueId && ( await checkVenueId( venueId ) );
+  venueId && dateAndTime && ( await checkMatchTime( venueId, dateAndTime ) );
 }
 
 export async function getMatchById(matchId) {
@@ -82,10 +118,11 @@ export async function updateMatch(match, body) {
 }
 
 export async function retrieveMatches() {
-  const matches = await Match.find()
+  const matches = await Match.find({dateAndTime: {$gt: Date.now()}})
     .populate("homeTeamId")
     .populate("awayTeamId")
-    .populate("venueId");
+    .populate( "venueId" );
+  console.log( matches.length );
   return matches;
 }
 
