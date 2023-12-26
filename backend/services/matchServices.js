@@ -26,11 +26,43 @@ export async function checkVenueId(venueId) {
   return venue;
 }
 
-export function compareTeamIds(homeTeamId, awayTeamId) {
+export async function compareTeamIds(homeTeamId, awayTeamId, dateAndTime) {
   if (homeTeamId.toString() === awayTeamId.toString()) {
     const error = new Error("Home and Away teams can't be the same");
     error.statusCode = 400;
     throw error;
+  }
+  if (dateAndTime) {
+    let afterdateAndTime = dateAndTime + 1;
+    let beforedateAndTime = dateAndTime - 1;
+    const homehomeMatches = await Match.find({
+      homeTeamId: homeTeamId,
+      dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
+    });
+    const awayawayMatches = await Match.find({
+      awayTeamId: awayTeamId,
+      dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
+    });
+    const homeawayMatches = await Match.find({
+      homeTeamId: awayTeamId,
+      dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
+    });
+    const awayhomeMatches = await Match.find({
+      awayTeamId: homeTeamId,
+      dateAndTime: { $gt: beforedateAndTime, $lt: afterdateAndTime },
+    });
+    if (
+      homeawayMatches ||
+      awayawayMatches ||
+      homehomeMatches ||
+      awayhomeMatches
+    ) {
+      const error = new Error(
+        "One of those teams is already playing on this day"
+      );
+      error.statusCode = 400;
+      throw error;
+    }
   }
 }
 
@@ -52,47 +84,48 @@ export async function addNewMatch(matchDetails) {
   await newMatch.save();
 }
 
-export async function checkMatchTime ( venueId, dateAndTime )
-{
-  if (typeof dateAndTime === "string") dateAndTime = new Date( dateAndTime );
-  if ( dateAndTime < Date.now() )
-  {
+export async function checkMatchTime(venueId, dateAndTime) {
+  if (typeof dateAndTime === "string") dateAndTime = new Date(dateAndTime);
+  if (dateAndTime < Date.now()) {
     const error = new Error("Match date must be in the future");
     error.statusCode = 400;
     throw error;
   }
   const matches = await Match.find({
-    venueId: venueId
-  } ).sort({dateAndTime: -1});
-  if ( !matches )
-  {
+    venueId: venueId,
+  }).sort({ dateAndTime: -1 });
+  if (!matches) {
     return true;
   }
-  for ( let match of matches )
-  {
+  for (let match of matches) {
     // Calculate the time difference in milliseconds
     const timeDifference = Math.abs(match.dateAndTime - dateAndTime);
-  
+
     // Convert milliseconds to hours
     const hoursDifference = timeDifference / (1000 * 60 * 60);
-  
+
     // Check if the difference is at least 2 hours
-    if ( hoursDifference < 3 )
-    {
+    if (hoursDifference < 3) {
       const error = new Error("Close dates between the available matches");
       error.statusCode = 400;
       throw error;
     }
   }
-    
 }
 
-export async function validateMatchDetails(homeTeamId, awayTeamId, venueId, dateAndTime) {
-  homeTeamId && awayTeamId && compareTeamIds(homeTeamId, awayTeamId);
+export async function validateMatchDetails(
+  homeTeamId,
+  awayTeamId,
+  venueId,
+  dateAndTime
+) {
+  homeTeamId &&
+    awayTeamId &&
+    (await compareTeamIds(homeTeamId, awayTeamId, dateAndTime));
   homeTeamId && (await checkTeamId(homeTeamId));
   awayTeamId && (await checkTeamId(awayTeamId));
-  venueId && ( await checkVenueId( venueId ) );
-  venueId && dateAndTime && ( await checkMatchTime( venueId, dateAndTime ) );
+  venueId && (await checkVenueId(venueId));
+  venueId && dateAndTime && (await checkMatchTime(venueId, dateAndTime));
 }
 
 export async function getMatchById(matchId) {
@@ -118,11 +151,11 @@ export async function updateMatch(match, body) {
 }
 
 export async function retrieveMatches() {
-  const matches = await Match.find({dateAndTime: {$gt: Date.now()}})
+  const matches = await Match.find({ dateAndTime: { $gt: Date.now() } })
     .populate("homeTeamId")
     .populate("awayTeamId")
-    .populate( "venueId" );
-  console.log( matches.length );
+    .populate("venueId");
+  console.log(matches.length);
   return matches;
 }
 
