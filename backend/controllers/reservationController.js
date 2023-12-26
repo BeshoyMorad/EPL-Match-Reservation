@@ -45,15 +45,14 @@ class reservationController {
           400
         );
       res.status(201).json(req.body.seats);
-    } catch ( error )
-    {
-      console.log( error )
-      if(req.badSeats && req.user &&req.match)
-      await reservationServices.handleDeleteReservation(
-        req.badSeats,
-        req.user,
-        req.match
-      );
+    } catch (error) {
+      console.log(error);
+      if (req.badSeats && req.user && req.match)
+        await reservationServices.handleDeleteReservation(
+          req.badSeats,
+          req.user,
+          req.match
+        );
       let formattedError = errorHandlingUtils.formatError(error);
       res
         .status(formattedError.statusCode)
@@ -92,11 +91,12 @@ class reservationController {
             "You haven't reserved this seat already",
             400
           );
-        const threeDaysLater = new Date(isReservationExisting.reservationDate);
-        threeDaysLater.setDate(threeDaysLater.getDate() + 3);
-        if (currentDate > threeDaysLater)
+        const threeDaysBefore = new Date(match.dateAndTime);
+        threeDaysBefore.setDate(threeDaysBefore.getDate() - 3);
+
+        if (currentDate > threeDaysBefore)
           errorHandlingUtils.throwError(
-            `You can't cancel your reservation as its more than three days after reservation date`,
+            `You can't cancel your reservation as, there are 3 days before the match`,
             400
           );
       }
